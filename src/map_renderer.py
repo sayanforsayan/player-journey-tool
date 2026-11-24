@@ -1,6 +1,6 @@
 """
 Plotly minimap visualization engine for LILA BLACK player journey replay and heatmaps.
-Clean, border-to-border minimap canvas with zero title cutoffs or overlapping legends.
+Optimized height (490px) to fit the entire dashboard onto a single viewport without scrolling.
 """
 
 from pathlib import Path
@@ -19,7 +19,7 @@ EVENT_STYLES = {
         "short_name": "PvP Kill",
         "color": "#E63946",  # Bright Red
         "symbol": "cross",
-        "size": 13,
+        "size": 11,
         "desc": "Player eliminated an opponent",
     },
     "Killed": {
@@ -27,7 +27,7 @@ EVENT_STYLES = {
         "short_name": "PvP Death",
         "color": "#8B0000",  # Dark Crimson
         "symbol": "x",
-        "size": 13,
+        "size": 11,
         "desc": "Player was eliminated by an opponent",
     },
     "BotKill": {
@@ -35,7 +35,7 @@ EVENT_STYLES = {
         "short_name": "Bot Kill",
         "color": "#F77F00",  # Orange
         "symbol": "triangle-up",
-        "size": 11,
+        "size": 10,
         "desc": "Player eliminated an AI bot",
     },
     "BotKilled": {
@@ -43,7 +43,7 @@ EVENT_STYLES = {
         "short_name": "Killed by Bot",
         "color": "#9D4EDD",  # Purple
         "symbol": "triangle-down",
-        "size": 11,
+        "size": 10,
         "desc": "Player was eliminated by an AI bot",
     },
     "KilledByStorm": {
@@ -51,7 +51,7 @@ EVENT_STYLES = {
         "short_name": "Storm Death",
         "color": "#00F0FF",  # Cyan
         "symbol": "hexagon",
-        "size": 14,
+        "size": 12,
         "desc": "Player died to the storm wall",
     },
     "Loot": {
@@ -59,7 +59,7 @@ EVENT_STYLES = {
         "short_name": "Loot Pickup",
         "color": "#FFD166",  # Gold
         "symbol": "diamond",
-        "size": 8,
+        "size": 7,
         "desc": "Item collected from map",
     },
 }
@@ -161,17 +161,17 @@ def create_base_minimap_figure(map_id: str) -> go.Figure:
         fixedrange=False,
     )
 
-    # Clean layout with no internal titles or overlapping legends (all shown in left sidebar)
+    # Height set to 490px so Title + Timeline + Metrics + Map + Color Indicators fit in one screen
     fig.update_layout(
         autosize=True,
-        height=720,
+        height=490,
         plot_bgcolor="#0A0C10",
         paper_bgcolor="#0A0C10",
-        margin=dict(l=10, r=10, t=10, b=10),
+        margin=dict(l=5, r=5, t=5, b=5),
         hoverlabel=dict(
             bgcolor="#1E232E",
             bordercolor="#38BDF8",
-            font=dict(color="#FFFFFF", size=12),
+            font=dict(color="#FFFFFF", size=11),
         ),
         showlegend=False,
         dragmode="pan",
@@ -232,7 +232,7 @@ def render_match_replay(
                     name=name_label,
                     line=dict(
                         color=user_color,
-                        width=1.5 if is_bot else 2.6,
+                        width=1.5 if is_bot else 2.5,
                         dash="dot" if is_bot else "solid",
                     ),
                     opacity=0.45 if is_bot else 0.85,
@@ -256,10 +256,10 @@ def render_match_replay(
                     mode="markers",
                     name=name_label,
                     marker=dict(
-                        size=9 if is_bot else 13,
+                        size=8 if is_bot else 11,
                         color=user_color,
                         symbol="circle",
-                        line=dict(color="#FFFFFF", width=2.0 if is_active else 0.8),
+                        line=dict(color="#FFFFFF", width=1.8 if is_active else 0.8),
                         opacity=0.95 if is_active else 0.35,
                     ),
                     customdata=[[
@@ -320,7 +320,7 @@ def render_match_replay(
                         size=style["size"],
                         color=style["color"],
                         symbol=style["symbol"],
-                        line=dict(color="#000000", width=1.2),
+                        line=dict(color="#000000", width=1.0),
                         opacity=0.95,
                     ),
                     customdata=custom_info,
@@ -384,7 +384,7 @@ def render_aggregate_heatmap(
             x=512,
             y=512,
             showarrow=False,
-            font=dict(color="#F59E0B", size=15),
+            font=dict(color="#F59E0B", size=14),
         )
         return fig
 
@@ -396,15 +396,15 @@ def render_aggregate_heatmap(
             colorscale=colorscale,
             reversescale=False,
             showscale=True,
-            ncontours=26,
+            ncontours=24,
             contours=dict(coloring="heatmap", showlines=False),
             opacity=opacity,
             colorbar=dict(
-                title=dict(text="Density", font=dict(color="#E2E8F0", size=11)),
-                tickfont=dict(color="#94A3B8", size=10),
+                title=dict(text="Density", font=dict(color="#E2E8F0", size=10)),
+                tickfont=dict(color="#94A3B8", size=9),
                 len=0.7,
                 y=0.5,
-                thickness=14,
+                thickness=12,
             ),
             hoverinfo="skip",
         )
@@ -420,9 +420,9 @@ def render_aggregate_heatmap(
                 y=sample_pins["pixel_y"],
                 mode="markers",
                 marker=dict(
-                    size=7,
+                    size=6,
                     color="#00F0FF" if heatmap_type == "storm" else "#EF4444",
-                    line=dict(color="#000000", width=1),
+                    line=dict(color="#000000", width=0.8),
                     opacity=0.85,
                 ),
                 name="Incident Pins",

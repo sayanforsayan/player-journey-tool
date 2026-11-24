@@ -1,7 +1,7 @@
 """
 LILA BLACK — Player Journey Visualization Tool
-All configuration in left sidebar.
-Main screen: Title, Timeline, Compact Match Metrics, Map Canvas, and Color Indicators at the bottom.
+Single-viewport responsive dashboard: Title, Timeline, Metrics, Map, and Bottom Indicators
+all visible simultaneously without scrolling.
 """
 
 import streamlit as st
@@ -25,7 +25,7 @@ from src.map_renderer import (
     EVENT_STYLES,
 )
 
-# Responsive Page configuration
+# Page configuration
 st.set_page_config(
     page_title="LILA BLACK — Level Design Telemetry",
     page_icon=None,
@@ -33,114 +33,117 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# Custom High-Contrast Styling
+# High-efficiency Single-Viewport Styling
 st.markdown(
     """
     <style>
-        /* Transparent Streamlit Header to prevent header clipping */
+        /* Minimal transparent header */
         header[data-testid="stHeader"] {
+            height: 2rem !important;
             background-color: transparent !important;
             z-index: 50 !important;
         }
 
-        /* Main container: adequate top padding clears fixed header */
+        /* Container padding tuned to fit everything into one screen */
         .block-container {
-            padding-top: 4.5rem !important;
-            padding-bottom: 2.5rem !important;
-            padding-left: 1.5rem !important;
-            padding-right: 1.5rem !important;
+            padding-top: 2.4rem !important;
+            padding-bottom: 0.5rem !important;
+            padding-left: 1.2rem !important;
+            padding-right: 1.2rem !important;
             max-width: 100% !important;
         }
         @media (max-width: 768px) {
             .block-container {
-                padding-top: 4.8rem !important;
-                padding-left: 1rem !important;
-                padding-right: 1rem !important;
+                padding-top: 3rem !important;
+                padding-left: 0.8rem !important;
+                padding-right: 0.8rem !important;
             }
         }
 
-        /* Large, Unclipped Map Title (ONLY Map Name, No Subtitle) */
-        .map-title-wrapper {
-            margin-top: 0.2rem;
-            margin-bottom: 0.6rem;
-            padding-bottom: 0.4rem;
-            border-bottom: 2px solid #1E293B;
+        /* Compact Header Row: Title on Left, Time Badge on Right */
+        .map-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2px;
+            padding-bottom: 2px;
         }
         .main-map-title {
-            font-size: 2.3rem !important;
+            font-size: 1.45rem !important;
             font-weight: 800 !important;
             color: #38BDF8 !important;
             margin: 0 !important;
             padding: 0 !important;
             line-height: 1.2 !important;
-            letter-spacing: -0.02em;
-        }
-        @media (max-width: 768px) {
-            .main-map-title {
-                font-size: 1.8rem !important;
-            }
+            letter-spacing: -0.01em;
         }
 
         /* Timeline Badge */
         .timeline-badge {
-            display: inline-block;
             background-color: #0F172A;
             border: 1px solid #334155;
-            border-radius: 6px;
-            padding: 3px 10px;
-            font-size: 0.82rem;
+            border-radius: 5px;
+            padding: 2px 8px;
+            font-size: 0.8rem;
             color: #E2E8F0;
-            margin-top: -4px;
-            margin-bottom: 8px;
+            white-space: nowrap;
         }
         .timeline-badge b {
             color: #38BDF8;
         }
 
-        /* Compact Match Metrics (Small Width and Small Height) */
+        /* Tight Slider Styling */
+        div[data-testid="stSlider"] {
+            margin-top: -6px !important;
+            margin-bottom: -4px !important;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+        }
+
+        /* Compact Metrics Strip (Single Slim Row, ~24px height) */
         .compact-metrics-strip {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 6px;
             margin-top: 2px;
-            margin-bottom: 10px;
-            max-width: 760px; /* Small, controlled width */
+            margin-bottom: 4px;
         }
         .compact-metric-pill {
             background-color: #0F172A;
             border: 1px solid #1E293B;
-            border-radius: 6px;
-            padding: 4px 10px; /* Small height */
+            border-radius: 4px;
+            padding: 2px 8px;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            font-size: 0.8rem;
+            gap: 4px;
+            font-size: 0.74rem;
         }
         .compact-lbl {
             color: #94A3B8;
             text-transform: uppercase;
-            font-size: 0.7rem;
-            letter-spacing: 0.04em;
+            font-size: 0.65rem;
+            letter-spacing: 0.03em;
         }
         .compact-val {
             font-weight: 700;
             color: #38BDF8;
-            font-size: 0.88rem;
+            font-size: 0.78rem;
         }
 
-        /* Color Indicators at the BOTTOM Side of the Map */
+        /* Slim Color Indicators at the BOTTOM of the Map */
         .indicators-strip-bottom {
             display: flex;
             flex-wrap: wrap;
             align-items: center;
-            gap: 10px 16px;
+            justify-content: flex-start;
+            gap: 6px 14px;
             background-color: #0F172A;
             border: 1px solid #1E293B;
-            border-radius: 8px;
-            padding: 8px 14px;
-            margin-top: 10px;
-            margin-bottom: 25px;
-            font-size: 0.8rem;
+            border-radius: 6px;
+            padding: 4px 10px;
+            margin-top: 4px;
+            margin-bottom: 8px;
+            font-size: 0.74rem;
             color: #E2E8F0;
         }
         .indicator-item {
@@ -149,18 +152,12 @@ st.markdown(
             white-space: nowrap;
         }
         .indicator-dot {
-            width: 9px;
-            height: 9px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
-            margin-right: 6px;
+            margin-right: 5px;
             display: inline-block;
             flex-shrink: 0;
-        }
-
-        /* Bottom Spacing under Map View Section */
-        .map-bottom-gap {
-            height: 35px;
-            width: 100%;
         }
 
         /* Sidebar Section Headers */
@@ -170,8 +167,8 @@ st.markdown(
             color: #94A3B8;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            margin-top: 14px;
-            margin-bottom: 6px;
+            margin-top: 12px;
+            margin-bottom: 4px;
         }
     </style>
     """,
@@ -203,7 +200,6 @@ def main():
     st.sidebar.markdown("<div class='sidebar-section-header'>1. Select Map & Date</div>", unsafe_allow_html=True)
 
     maps = get_available_maps(df)
-    # Sidebar dropdown includes Primary, Secondary, Close-Quarters labels
     map_labels = {
         "AmbroseValley": "Ambrose Valley (Primary Map)",
         "GrandRift": "Grand Rift (Secondary Map)",
@@ -217,7 +213,6 @@ def main():
         label_visibility="collapsed",
     )
 
-    # Clean title text for Main Screen (ONLY Map Name)
     clean_map_names = {
         "AmbroseValley": "Ambrose Valley",
         "GrandRift": "Grand Rift",
@@ -245,7 +240,7 @@ def main():
 
     st.sidebar.markdown("---")
 
-    # State variables for main screen
+    # State variables
     current_time_sec = 0.0
     max_duration_sec = 1.0
     show_paths = True
@@ -294,7 +289,7 @@ def main():
 
             match_options = {m["match_id"]: m["label"] for m in filtered_matches}
             selected_match_id = st.sidebar.selectbox(
-                f"Select Match ({len(filtered_matches)})",
+                f"Choose Match ({len(filtered_matches)})",
                 options=list(match_options.keys()),
                 format_func=lambda mid: match_options[mid],
                 index=0,
@@ -362,41 +357,49 @@ def main():
         st.sidebar.info("Review key level design takeaways and spatial recommendations on the main screen.")
 
     # =========================================================================
-    # MAIN SCREEN: TITLE, TIMELINE, COMPACT METRICS, MAP CANVAS & BOTTOM INDICATORS
+    # MAIN SCREEN: SINGLE-VIEWPORT COMPACT FLOW (NO SCROLLING)
     # =========================================================================
 
-    # 1. Main Screen Title: ONLY the Map Name (Large, Bold, Cleared Top Padding)
-    st.markdown(
-        f"""
-        <div class='map-title-wrapper'>
-            <h1 class='main-map-title'>{main_title_text}</h1>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    # 2. Replay Mode Flow
     if view_mode == "Match Replay":
         if match_df is not None and not match_df.empty:
-            # A) Playback Timeline Slider
+            # 1. Top Row: Title (Left) and Timeline Badge (Right)
+            st.markdown(
+                f"""
+                <div class='map-header-row'>
+                    <div class='main-map-title'>{main_title_text}</div>
+                    <div class='timeline-badge' id='timeBadge'>
+                        Playback Time: <b>{format_seconds_to_mmss(max_duration_sec)}</b>
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+            # 2. Compact Timeline Slider (No redundant label)
             current_time_sec = st.slider(
-                "Playback Timeline (Seconds):",
+                "Timeline",
                 min_value=0.0,
                 max_value=max_duration_sec,
                 value=max_duration_sec,
                 step=1.0 if max_duration_sec > 15 else 0.5,
-                help="Slide to watch player movement and combat unfold.",
+                label_visibility="collapsed",
             )
 
+            # Update timeline badge dynamically
+            pct = int((current_time_sec / max_duration_sec) * 100) if max_duration_sec > 0 else 100
             st.markdown(
-                f"<div class='timeline-badge'>"
-                f"Playback Time: <b>{format_seconds_to_mmss(current_time_sec)} / {format_seconds_to_mmss(max_duration_sec)}</b> "
-                f"({int((current_time_sec / max_duration_sec) * 100)}% of match elapsed)"
-                f"</div>",
+                f"""
+                <script>
+                    var b = window.parent.document.getElementById('timeBadge');
+                    if (b) {{
+                        b.innerHTML = "Playback Time: <b>{format_seconds_to_mmss(current_time_sec)} / {format_seconds_to_mmss(max_duration_sec)}</b> ({pct}%)";
+                    }}
+                </script>
+                """,
                 unsafe_allow_html=True,
             )
 
-            # B) Compact Match Metrics (Small Width & Small Height, Above Map)
+            # 3. Compact Metrics Strip (Above Map, ~24px height)
             total_kills = match_info.get("player_kills", 0) + match_info.get("bot_kills", 0)
             st.markdown(
                 f"""
@@ -426,7 +429,7 @@ def main():
                 unsafe_allow_html=True,
             )
 
-            # C) Map View Section (Responsive Minimap Canvas)
+            # 4. Map Canvas (Single-screen responsive height)
             replay_fig = render_match_replay(
                 match_df=match_df,
                 map_id=selected_map_key,
@@ -441,32 +444,28 @@ def main():
             st.plotly_chart(
                 replay_fig,
                 use_container_width=True,
-                config={"responsive": True, "scrollZoom": True, "displayModeBar": True},
+                config={"responsive": True, "scrollZoom": True, "displayModeBar": False},
             )
 
-            # D) Color Indicators (Positioned at BOTTOM side of the Map)
+            # 5. Color Indicators at the BOTTOM of the Map
             st.markdown(
                 """
                 <div class='indicators-strip-bottom'>
-                    <div class='indicator-item'><span class='indicator-dot' style='background-color: #38BDF8;'></span><b>Blue:</b> Human Player</div>
-                    <div class='indicator-item'><span class='indicator-dot' style='background-color: #94A3B8;'></span><b>Gray:</b> AI Bot</div>
-                    <div class='indicator-item'><span class='indicator-dot' style='background-color: #E63946;'></span><b>Red:</b> Player vs Player Kill</div>
-                    <div class='indicator-item'><span class='indicator-dot' style='background-color: #8B0000;'></span><b>Dark Red:</b> Player vs Player Death</div>
-                    <div class='indicator-item'><span class='indicator-dot' style='background-color: #F77F00;'></span><b>Orange:</b> Player Killed AI Bot</div>
-                    <div class='indicator-item'><span class='indicator-dot' style='background-color: #9D4EDD;'></span><b>Purple:</b> Player Died to AI Bot</div>
-                    <div class='indicator-item'><span class='indicator-dot' style='background-color: #00F0FF;'></span><b>Cyan:</b> Died to Storm Ring</div>
-                    <div class='indicator-item'><span class='indicator-dot' style='background-color: #FFD166;'></span><b>Yellow:</b> Loot Pickup</div>
+                    <div class='indicator-item'><span class='indicator-dot' style='background-color: #38BDF8;'></span><b>Blue:</b> Human</div>
+                    <div class='indicator-item'><span class='indicator-dot' style='background-color: #94A3B8;'></span><b>Gray:</b> Bot</div>
+                    <div class='indicator-item'><span class='indicator-dot' style='background-color: #E63946;'></span><b>Red:</b> PvP Kill</div>
+                    <div class='indicator-item'><span class='indicator-dot' style='background-color: #8B0000;'></span><b>Dark Red:</b> PvP Death</div>
+                    <div class='indicator-item'><span class='indicator-dot' style='background-color: #F77F00;'></span><b>Orange:</b> Bot Kill</div>
+                    <div class='indicator-item'><span class='indicator-dot' style='background-color: #9D4EDD;'></span><b>Purple:</b> Bot Killed Player</div>
+                    <div class='indicator-item'><span class='indicator-dot' style='background-color: #00F0FF;'></span><b>Cyan:</b> Storm Death</div>
+                    <div class='indicator-item'><span class='indicator-dot' style='background-color: #FFD166;'></span><b>Yellow:</b> Loot</div>
                 </div>
                 """,
                 unsafe_allow_html=True,
             )
-
-            # E) Bottom Gap under the entire section
-            st.markdown("<div class='map-bottom-gap'></div>", unsafe_allow_html=True)
         else:
             st.info("Select a match from the left sidebar to start playback.")
 
-    # 3. Heatmaps Mode Flow
     elif view_mode == "Map Heatmaps":
         agg_mask = df["map_id"] == selected_map_key
         if selected_date:
@@ -474,7 +473,17 @@ def main():
         filtered_agg_df = df[agg_mask]
         stats = get_aggregate_stats(filtered_agg_df)
 
-        # Compact Aggregate Metrics (Small Width & Small Height, Above Map)
+        # 1. Top Row: Title
+        st.markdown(
+            f"""
+            <div class='map-header-row'>
+                <div class='main-map-title'>{main_title_text}</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        # 2. Compact Aggregate Metrics (Above Map)
         st.markdown(
             f"""
             <div class='compact-metrics-strip'>
@@ -503,6 +512,7 @@ def main():
             unsafe_allow_html=True,
         )
 
+        # 3. Heatmap Canvas
         heat_fig = render_aggregate_heatmap(
             df=filtered_agg_df,
             map_id=selected_map_key,
@@ -516,23 +526,29 @@ def main():
         st.plotly_chart(
             heat_fig,
             use_container_width=True,
-            config={"responsive": True, "scrollZoom": True, "displayModeBar": True},
+            config={"responsive": True, "scrollZoom": True, "displayModeBar": False},
         )
 
-        # Bottom Gap for Heatmap View Section
-        st.markdown("<div class='map-bottom-gap'></div>", unsafe_allow_html=True)
-
-    # 4. Level Design Notes Flow
     else:
+        # Level Design Notes
+        st.markdown(
+            f"""
+            <div class='map-header-row'>
+                <div class='main-map-title'>{main_title_text}</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
         if selected_map_key == "AmbroseValley":
             st.markdown(
                 """
-                <div style='background-color: #0F172A; border-left: 4px solid #38BDF8; padding: 16px 20px; border-radius: 0 8px 8px 0; color: #F1F5F9; line-height: 1.6;'>
-                    <h3 style='color: #38BDF8; margin-top: 0;'>Level Design Observations</h3>
-                    <p><b>1. Dead Zone in Northwest Quadrant:</b> Over 78.4% of player traversal occurs along the Southwest-to-Northeast corridor. The Northwest quadrant accounts for less than 4% of total movement.</p>
-                    <p><i>Recommendation:</i> Add high-value extraction beacons or infiltration spawns in the Northwest to encourage peripheral exploration.</p>
-                    <p><b>2. Elevation Combat Disparity:</b> Players on high ground (elevation &gt; 130m) maintain a 4.8 : 1 K/D against AI bots, while players in the central valley (elevation &lt; 90m) suffer heavy casualties.</p>
-                    <p><i>Recommendation:</i> Place rock outcroppings and sightline blockers along the lower riverbed to break downward lines of sight.</p>
+                <div style='background-color: #0F172A; border-left: 4px solid #38BDF8; padding: 14px 18px; border-radius: 0 8px 8px 0; color: #F1F5F9; line-height: 1.6; font-size: 0.88rem;'>
+                    <h4 style='color: #38BDF8; margin-top: 0; margin-bottom: 8px;'>Level Design Observations</h4>
+                    <p style='margin-bottom: 8px;'><b>1. Dead Zone in Northwest Quadrant:</b> Over 78.4% of player traversal occurs along the Southwest-to-Northeast corridor. The Northwest quadrant accounts for less than 4% of total movement.</p>
+                    <p style='margin-bottom: 8px;'><i>Recommendation:</i> Add high-value extraction beacons or infiltration spawns in the Northwest to encourage peripheral exploration.</p>
+                    <p style='margin-bottom: 8px;'><b>2. Elevation Combat Disparity:</b> Players on high ground (elevation &gt; 130m) maintain a 4.8 : 1 K/D against AI bots, while players in the central valley (elevation &lt; 90m) suffer heavy casualties.</p>
+                    <p style='margin-bottom: 0;'><i>Recommendation:</i> Place rock outcroppings and sightline blockers along the lower riverbed to break downward lines of sight.</p>
                 </div>
                 """,
                 unsafe_allow_html=True,
@@ -540,11 +556,11 @@ def main():
         elif selected_map_key == "Lockdown":
             st.markdown(
                 """
-                <div style='background-color: #0F172A; border-left: 4px solid #38BDF8; padding: 16px 20px; border-radius: 0 8px 8px 0; color: #F1F5F9; line-height: 1.6;'>
-                    <h3 style='color: #38BDF8; margin-top: 0;'>Level Design Observations</h3>
-                    <p><b>1. High Storm Ring Casualties (9.94% of matches):</b> Lockdown has the highest storm fatality rate of any map. Casualties cluster tightly around interior doorways in the southern industrial wing.</p>
-                    <p><i>Recommendation:</i> Add secondary egress vents or vertical drop chutes in the southern wing to prevent players getting cornered by the closing storm wall.</p>
-                    <p><b>2. Close-Quarters AI Lethality:</b> In tight indoor corridors, player-to-bot K/D drops to 2.54 : 1, compared to &gt; 4.1 : 1 on open maps.</p>
+                <div style='background-color: #0F172A; border-left: 4px solid #38BDF8; padding: 14px 18px; border-radius: 0 8px 8px 0; color: #F1F5F9; line-height: 1.6; font-size: 0.88rem;'>
+                    <h4 style='color: #38BDF8; margin-top: 0; margin-bottom: 8px;'>Level Design Observations</h4>
+                    <p style='margin-bottom: 8px;'><b>1. High Storm Ring Casualties (9.94% of matches):</b> Lockdown has the highest storm fatality rate of any map. Casualties cluster tightly around interior doorways in the southern industrial wing.</p>
+                    <p style='margin-bottom: 8px;'><i>Recommendation:</i> Add secondary egress vents or vertical drop chutes in the southern wing to prevent players getting cornered by the closing storm wall.</p>
+                    <p style='margin-bottom: 0;'><b>2. Close-Quarters AI Lethality:</b> In tight indoor corridors, player-to-bot K/D drops to 2.54 : 1, compared to &gt; 4.1 : 1 on open maps.</p>
                 </div>
                 """,
                 unsafe_allow_html=True,
@@ -552,17 +568,15 @@ def main():
         else:
             st.markdown(
                 """
-                <div style='background-color: #0F172A; border-left: 4px solid #38BDF8; padding: 16px 20px; border-radius: 0 8px 8px 0; color: #F1F5F9; line-height: 1.6;'>
-                    <h3 style='color: #38BDF8; margin-top: 0;'>Level Design Observations</h3>
-                    <p><b>1. Central Gorge Bridge Choke Points:</b> Player movement and firefights concentrate heavily on the two bridges spanning the central chasm.</p>
-                    <p><i>Recommendation:</i> Add lower catwalks or zip-line crossing points across the gorge to provide alternative crossing routes.</p>
-                    <p><b>2. Fast Lane Rotations:</b> Grand Rift has the shortest average match duration of all 3 maps (mean duration 6.2 minutes), driven by rapid rotations across the linear two-lane map layout.</p>
+                <div style='background-color: #0F172A; border-left: 4px solid #38BDF8; padding: 14px 18px; border-radius: 0 8px 8px 0; color: #F1F5F9; line-height: 1.6; font-size: 0.88rem;'>
+                    <h4 style='color: #38BDF8; margin-top: 0; margin-bottom: 8px;'>Level Design Observations</h4>
+                    <p style='margin-bottom: 8px;'><b>1. Central Gorge Bridge Choke Points:</b> Player movement and firefights concentrate heavily on the two bridges spanning the central chasm.</p>
+                    <p style='margin-bottom: 8px;'><i>Recommendation:</i> Add lower catwalks or zip-line crossing points across the gorge to provide alternative crossing routes.</p>
+                    <p style='margin-bottom: 0;'><b>2. Fast Lane Rotations:</b> Grand Rift has the shortest average match duration of all 3 maps (mean duration 6.2 minutes), driven by rapid rotations across the linear two-lane map layout.</p>
                 </div>
                 """,
                 unsafe_allow_html=True,
             )
-
-        st.markdown("<div class='map-bottom-gap'></div>", unsafe_allow_html=True)
 
 
 if __name__ == "__main__":
