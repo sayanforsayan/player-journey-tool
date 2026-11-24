@@ -58,7 +58,7 @@ The Player Journey Visualization Tool is designed to give Level Designers an int
 
 ### 2.2 Minimap Image Downscaling (Web Optimization)
 - Raw minimap images in `minimaps/` were up to **9000x9000 pixels (11.8 MB)**. Transferring these uncompressed over web sockets for every filter change degrades browser framerate.
-- The pipeline creates optimized $1024 \times 1024$ counterparts in `minimaps/optimized/`, reducing payload size by **~90%** (down to 124 KB–750 KB) while preserving 1:1 pixel parity with the coordinate math.
+- The repository maintains web-optimized $1024 \times 1024$ minimap images in `minimaps/`, reducing payload size by **~90%** (down to 124 KB–750 KB) while preserving 1:1 pixel parity with the coordinate math.
 
 ---
 

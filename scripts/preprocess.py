@@ -179,15 +179,16 @@ def preprocess(input_dir: str, output_path: str):
 
 
 if __name__ == "__main__":
+    default_base = Path(__file__).resolve().parent.parent
     parser = argparse.ArgumentParser(description="Preprocess player telemetry data")
     parser.add_argument(
         "--input-dir",
-        default="/Users/sayanjana/player_data",
+        default=str(default_base / "player_data"),
         help="Path to raw player_data folder",
     )
     parser.add_argument(
         "--output-file",
-        default="/Users/sayanjana/player-journey-tool/data/processed_events.parquet",
+        default=str(default_base / "data" / "processed_events.parquet"),
         help="Path to write processed parquet",
     )
     args = parser.parse_args()

@@ -222,3 +222,15 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 .DS_Store
+
+# Raw Telemetry Data (baked into data/processed_events.parquet)
+player_data/
+raw_data/
+*.tmp
+*.bak
+scratch/
+
+# IDE & Editor settings
+.vscode/
+.idea/
+Thumbs.db

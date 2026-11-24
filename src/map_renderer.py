@@ -1,6 +1,6 @@
 """
 Plotly minimap visualization engine for player journey replay and heatmaps.
-Responsive across mobile, tablet, and PC with zoom, pan, and home default view controls.
+Responsive across mobile, tablet, and PC with interactive pan, fit to scale, and default home view controls.
 """
 
 from pathlib import Path

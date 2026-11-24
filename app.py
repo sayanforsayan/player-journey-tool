@@ -1,7 +1,7 @@
 """
 Player Journey Visualization Tool
 Level Design Telemetry Suite.
-Responsive across mobile, tablet, and monitor screens with interactive zoom, pan, and home controls.
+Responsive across mobile, tablet, and monitor screens with interactive pan, fit to scale, and home default view controls.
 """
 
 import streamlit as st

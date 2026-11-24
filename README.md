@@ -25,7 +25,7 @@
 - **Timeline Playback Scrubber:** Scrub match time from 00:00 to match end (up to ~15 mins) to observe player paths unfold in chronological order.
 - **Human vs. AI Differentiation:** Human players render with solid, distinct color-coded lines; AI bots render with dashed paths.
 - **Discrete Event Markers:** Real-time visual markers for PvP Kills, PvP Deaths, Bot Kills, Bot Deaths, Storm Eliminations, and Loot Pickups.
-- **Interactive Controls:** Zoom in, Zoom out, Pan, Box Zoom, Home / Default View reset, and Fullscreen toggle.
+- **Interactive Controls:** Fit to Scale, Home / Default View reset, Pan tool, mouse/trackpad scroll-to-zoom, and Fullscreen toggle.
 - **Combat Log:** Chronological, filterable match feed showing all combat and loot events with elevation context.
 
 ### 2. Aggregate Heatmaps
