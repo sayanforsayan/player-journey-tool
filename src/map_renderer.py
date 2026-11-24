@@ -143,27 +143,13 @@ def create_base_minimap_figure(map_id: str) -> go.Figure:
             )
         )
 
-    # 4 Corner Boundary Anchors to guarantee Home / Reset View always fits full 1024x1024 map
-    fig.add_trace(
-        go.Scatter(
-            x=[0, 1024, 0, 1024],
-            y=[0, 0, 1024, 1024],
-            mode="markers",
-            marker=dict(opacity=0, size=0.1, color="rgba(0,0,0,0)"),
-            hoverinfo="skip",
-            showlegend=False,
-        )
-    )
-
-    # 1:1 aspect ratio with inverted Y-axis (top-left is 0,0) and domain constraint
+    # 1:1 aspect ratio with inverted Y-axis (top-left is 0,0)
     fig.update_xaxes(
         range=[0, 1024],
         showgrid=False,
         zeroline=False,
         visible=False,
         fixedrange=False,
-        constrain="domain",
-        autorange=False,
     )
     fig.update_yaxes(
         range=[1024, 0],
@@ -173,14 +159,11 @@ def create_base_minimap_figure(map_id: str) -> go.Figure:
         zeroline=False,
         visible=False,
         fixedrange=False,
-        constrain="domain",
-        autorange=False,
     )
 
-    # Responsive layout: height 580px balances monitors and laptops without dead space or scrolling
     fig.update_layout(
         autosize=True,
-        height=580,
+        height=540,
         plot_bgcolor="#0A0C10",
         paper_bgcolor="#0A0C10",
         margin=dict(l=5, r=5, t=5, b=5),

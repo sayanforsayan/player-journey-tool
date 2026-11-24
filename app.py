@@ -170,28 +170,6 @@ st.markdown(
             margin-top: 12px;
             margin-bottom: 4px;
         }
-
-        /* Ensure Plotly Map Canvas is centered and responsive across all screen sizes */
-        div[data-testid="stPlotlyChart"] {
-            display: flex !important;
-            justify-content: center !important;
-            align-items: center !important;
-            margin: 0 auto !important;
-            width: 100% !important;
-        }
-        div[data-testid="stPlotlyChart"] > div {
-            display: flex !important;
-            justify-content: center !important;
-            align-items: center !important;
-            margin: 0 auto !important;
-            width: 100% !important;
-        }
-        div[data-testid="stPlotlyChart"] .js-plotly-plot {
-            margin: 0 auto !important;
-        }
-        div[data-testid="stPlotlyChart"] .plot-container {
-            margin: 0 auto !important;
-        }
     </style>
     """,
     unsafe_allow_html=True,
@@ -383,21 +361,20 @@ def main():
     # MAIN SCREEN: SINGLE-VIEWPORT COMPACT FLOW (NO SCROLLING)
     # =========================================================================
 
-    # Plotly interactive configuration with pan and home icon (zoom buttons removed)
+    # Plotly interactive configuration: only zoom buttons removed; Fit to scale, Home, and Pan kept
     map_config = {
         "responsive": True,
         "scrollZoom": True,
         "displayModeBar": True,
         "modeBarButtonsToAdd": [
-            "resetScale2d",  # Home icon: resets view to fit full 1024x1024 map
+            "resetScale2d",  # Home icon (Reset axes to default view)
+            "autoScale2d",   # Fit to scale / Autoscale (kept as requested)
+            "pan2d",         # Pan Tool
         ],
         "modeBarButtonsToRemove": [
             "zoom2d",        # Box Zoom button removed
             "zoomIn2d",      # Zoom In (+) button removed
             "zoomOut2d",     # Zoom Out (-) button removed
-            "select2d",      # Box Select removed
-            "lasso2d",       # Lasso Select removed
-            "autoScale2d",   # Auto Scale removed
         ],
         "displaylogo": False,
     }
