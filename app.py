@@ -1,7 +1,7 @@
 """
 LILA BLACK — Player Journey Visualization Tool
 All configuration in left sidebar.
-Main screen: Title (clean & unclipped), Timeline, Match Metrics, Color Indicators, and Map View with bottom gap.
+Main screen: Title, Timeline, Compact Match Metrics, Map Canvas, and Color Indicators at the bottom.
 """
 
 import streamlit as st
@@ -33,7 +33,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# Custom High-Contrast Styling: Clears Streamlit fixed header to prevent title cutoff
+# Custom High-Contrast Styling
 st.markdown(
     """
     <style>
@@ -43,10 +43,10 @@ st.markdown(
             z-index: 50 !important;
         }
 
-        /* Main container: adequate top padding clears fixed header, bottom padding gives map room */
+        /* Main container: adequate top padding clears fixed header */
         .block-container {
             padding-top: 4.5rem !important;
-            padding-bottom: 3.5rem !important;
+            padding-bottom: 2.5rem !important;
             padding-left: 1.5rem !important;
             padding-right: 1.5rem !important;
             max-width: 100% !important;
@@ -62,8 +62,8 @@ st.markdown(
         /* Large, Unclipped Map Title (ONLY Map Name, No Subtitle) */
         .map-title-wrapper {
             margin-top: 0.2rem;
-            margin-bottom: 0.8rem;
-            padding-bottom: 0.5rem;
+            margin-bottom: 0.6rem;
+            padding-bottom: 0.4rem;
             border-bottom: 2px solid #1E293B;
         }
         .main-map-title {
@@ -87,56 +87,60 @@ st.markdown(
             background-color: #0F172A;
             border: 1px solid #334155;
             border-radius: 6px;
-            padding: 4px 12px;
-            font-size: 0.88rem;
+            padding: 3px 10px;
+            font-size: 0.82rem;
             color: #E2E8F0;
             margin-top: -4px;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
         .timeline-badge b {
             color: #38BDF8;
         }
 
-        /* Responsive Match Metrics Grid (Above Color Indicators) */
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-            gap: 10px;
-            margin-bottom: 12px;
+        /* Compact Match Metrics (Small Width and Small Height) */
+        .compact-metrics-strip {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 2px;
+            margin-bottom: 10px;
+            max-width: 760px; /* Small, controlled width */
         }
-        .metric-card {
+        .compact-metric-pill {
             background-color: #0F172A;
             border: 1px solid #1E293B;
-            border-radius: 8px;
-            padding: 10px 12px;
-            text-align: center;
+            border-radius: 6px;
+            padding: 4px 10px; /* Small height */
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
         }
-        .metric-val {
-            font-size: 1.35rem;
-            font-weight: 700;
-            color: #38BDF8;
-            line-height: 1.2;
-        }
-        .metric-lbl {
-            font-size: 0.75rem;
+        .compact-lbl {
             color: #94A3B8;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-top: 3px;
+            font-size: 0.7rem;
+            letter-spacing: 0.04em;
+        }
+        .compact-val {
+            font-weight: 700;
+            color: #38BDF8;
+            font-size: 0.88rem;
         }
 
-        /* Responsive Horizontal Color Indicators (Under Timeline & Metrics, Above Map) */
-        .indicators-strip {
+        /* Color Indicators at the BOTTOM Side of the Map */
+        .indicators-strip-bottom {
             display: flex;
             flex-wrap: wrap;
             align-items: center;
-            gap: 12px 18px;
+            gap: 10px 16px;
             background-color: #0F172A;
             border: 1px solid #1E293B;
             border-radius: 8px;
-            padding: 10px 14px;
-            margin-bottom: 16px;
-            font-size: 0.82rem;
+            padding: 8px 14px;
+            margin-top: 10px;
+            margin-bottom: 25px;
+            font-size: 0.8rem;
             color: #E2E8F0;
         }
         .indicator-item {
@@ -145,8 +149,8 @@ st.markdown(
             white-space: nowrap;
         }
         .indicator-dot {
-            width: 10px;
-            height: 10px;
+            width: 9px;
+            height: 9px;
             border-radius: 50%;
             margin-right: 6px;
             display: inline-block;
@@ -155,7 +159,7 @@ st.markdown(
 
         /* Bottom Spacing under Map View Section */
         .map-bottom-gap {
-            height: 45px;
+            height: 35px;
             width: 100%;
         }
 
@@ -189,7 +193,7 @@ def main():
         return
 
     # =========================================================================
-    # LEFT SIDEBAR: ALL CONTROLS, DROPDOWNS & FILTER CONFIGURATION
+    # LEFT SIDEBAR: CONTROLS, DROPDOWNS & FILTER CONFIGURATION
     # =========================================================================
     st.sidebar.markdown("## LILA BLACK")
     st.sidebar.caption("Level Design Telemetry Suite")
@@ -213,7 +217,7 @@ def main():
         label_visibility="collapsed",
     )
 
-    # Clean title text for Main Screen (ONLY Map Name, No Subtitle)
+    # Clean title text for Main Screen (ONLY Map Name)
     clean_map_names = {
         "AmbroseValley": "Ambrose Valley",
         "GrandRift": "Grand Rift",
@@ -264,7 +268,7 @@ def main():
             st.sidebar.warning("No matches found for selected date.")
         else:
             match_filter = st.sidebar.selectbox(
-                "Filter Match Category",
+                "Filter Category",
                 options=[
                     "All Matches",
                     "Matches with Storm Deaths",
@@ -358,7 +362,7 @@ def main():
         st.sidebar.info("Review key level design takeaways and spatial recommendations on the main screen.")
 
     # =========================================================================
-    # MAIN SCREEN: TITLE (NO SUBTITLE), TIMELINE, METRICS, INDICATORS & MAP
+    # MAIN SCREEN: TITLE, TIMELINE, COMPACT METRICS, MAP CANVAS & BOTTOM INDICATORS
     # =========================================================================
 
     # 1. Main Screen Title: ONLY the Map Name (Large, Bold, Cleared Top Padding)
@@ -392,54 +396,37 @@ def main():
                 unsafe_allow_html=True,
             )
 
-            # B) Match Metrics (Above Color Indicators, Responsive Grid)
+            # B) Compact Match Metrics (Small Width & Small Height, Above Map)
             total_kills = match_info.get("player_kills", 0) + match_info.get("bot_kills", 0)
             st.markdown(
                 f"""
-                <div class='metrics-grid'>
-                    <div class='metric-card'>
-                        <div class='metric-val'>{match_info.get('duration_str', '00:00')}</div>
-                        <div class='metric-lbl'>Duration</div>
+                <div class='compact-metrics-strip'>
+                    <div class='compact-metric-pill'>
+                        <span class='compact-lbl'>Duration:</span>
+                        <span class='compact-val'>{match_info.get('duration_str', '00:00')}</span>
                     </div>
-                    <div class='metric-card'>
-                        <div class='metric-val'>{match_info.get('human_count', 0)} / {match_info.get('bot_count', 0)}</div>
-                        <div class='metric-lbl'>Humans / Bots</div>
+                    <div class='compact-metric-pill'>
+                        <span class='compact-lbl'>Players:</span>
+                        <span class='compact-val'>{match_info.get('human_count', 0)} Human, {match_info.get('bot_count', 0)} Bot</span>
                     </div>
-                    <div class='metric-card'>
-                        <div class='metric-val'>{total_kills}</div>
-                        <div class='metric-lbl'>Total Kills</div>
+                    <div class='compact-metric-pill'>
+                        <span class='compact-lbl'>Kills:</span>
+                        <span class='compact-val'>{total_kills}</span>
                     </div>
-                    <div class='metric-card'>
-                        <div class='metric-val'>{match_info.get('storm_deaths', 0)}</div>
-                        <div class='metric-lbl'>Storm Deaths</div>
+                    <div class='compact-metric-pill'>
+                        <span class='compact-lbl'>Storm Deaths:</span>
+                        <span class='compact-val'>{match_info.get('storm_deaths', 0)}</span>
                     </div>
-                    <div class='metric-card'>
-                        <div class='metric-val'>{match_info.get('loot_events', 0)}</div>
-                        <div class='metric-lbl'>Loot Pickups</div>
+                    <div class='compact-metric-pill'>
+                        <span class='compact-lbl'>Loot:</span>
+                        <span class='compact-val'>{match_info.get('loot_events', 0)}</span>
                     </div>
                 </div>
                 """,
                 unsafe_allow_html=True,
             )
 
-            # C) Color Indicators (Under Playback Timeline and Metrics, Above Map)
-            st.markdown(
-                """
-                <div class='indicators-strip'>
-                    <div class='indicator-item'><span class='indicator-dot' style='background-color: #38BDF8;'></span><b>Blue:</b> Human Player</div>
-                    <div class='indicator-item'><span class='indicator-dot' style='background-color: #94A3B8;'></span><b>Gray:</b> AI Bot</div>
-                    <div class='indicator-item'><span class='indicator-dot' style='background-color: #E63946;'></span><b>Red:</b> Player vs Player Kill</div>
-                    <div class='indicator-item'><span class='indicator-dot' style='background-color: #8B0000;'></span><b>Dark Red:</b> Player vs Player Death</div>
-                    <div class='indicator-item'><span class='indicator-dot' style='background-color: #F77F00;'></span><b>Orange:</b> Player Killed AI Bot</div>
-                    <div class='indicator-item'><span class='indicator-dot' style='background-color: #9D4EDD;'></span><b>Purple:</b> Player Died to AI Bot</div>
-                    <div class='indicator-item'><span class='indicator-dot' style='background-color: #00F0FF;'></span><b>Cyan:</b> Died to Storm Ring</div>
-                    <div class='indicator-item'><span class='indicator-dot' style='background-color: #FFD166;'></span><b>Yellow:</b> Loot Pickup</div>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
-
-            # D) Map View Section (Responsive Canvas)
+            # C) Map View Section (Responsive Minimap Canvas)
             replay_fig = render_match_replay(
                 match_df=match_df,
                 map_id=selected_map_key,
@@ -457,7 +444,24 @@ def main():
                 config={"responsive": True, "scrollZoom": True, "displayModeBar": True},
             )
 
-            # E) Bottom Gap for Map View Section
+            # D) Color Indicators (Positioned at BOTTOM side of the Map)
+            st.markdown(
+                """
+                <div class='indicators-strip-bottom'>
+                    <div class='indicator-item'><span class='indicator-dot' style='background-color: #38BDF8;'></span><b>Blue:</b> Human Player</div>
+                    <div class='indicator-item'><span class='indicator-dot' style='background-color: #94A3B8;'></span><b>Gray:</b> AI Bot</div>
+                    <div class='indicator-item'><span class='indicator-dot' style='background-color: #E63946;'></span><b>Red:</b> Player vs Player Kill</div>
+                    <div class='indicator-item'><span class='indicator-dot' style='background-color: #8B0000;'></span><b>Dark Red:</b> Player vs Player Death</div>
+                    <div class='indicator-item'><span class='indicator-dot' style='background-color: #F77F00;'></span><b>Orange:</b> Player Killed AI Bot</div>
+                    <div class='indicator-item'><span class='indicator-dot' style='background-color: #9D4EDD;'></span><b>Purple:</b> Player Died to AI Bot</div>
+                    <div class='indicator-item'><span class='indicator-dot' style='background-color: #00F0FF;'></span><b>Cyan:</b> Died to Storm Ring</div>
+                    <div class='indicator-item'><span class='indicator-dot' style='background-color: #FFD166;'></span><b>Yellow:</b> Loot Pickup</div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+            # E) Bottom Gap under the entire section
             st.markdown("<div class='map-bottom-gap'></div>", unsafe_allow_html=True)
         else:
             st.info("Select a match from the left sidebar to start playback.")
@@ -470,29 +474,29 @@ def main():
         filtered_agg_df = df[agg_mask]
         stats = get_aggregate_stats(filtered_agg_df)
 
-        # Aggregate Metrics Grid (Above Map)
+        # Compact Aggregate Metrics (Small Width & Small Height, Above Map)
         st.markdown(
             f"""
-            <div class='metrics-grid'>
-                <div class='metric-card'>
-                    <div class='metric-val'>{stats['total_matches']:,}</div>
-                    <div class='metric-lbl'>Matches</div>
+            <div class='compact-metrics-strip'>
+                <div class='compact-metric-pill'>
+                    <span class='compact-lbl'>Matches:</span>
+                    <span class='compact-val'>{stats['total_matches']:,}</span>
                 </div>
-                <div class='metric-card'>
-                    <div class='metric-val'>{stats['human_players']:,} / {stats['bot_players']:,}</div>
-                    <div class='metric-lbl'>Humans / Bots</div>
+                <div class='compact-metric-pill'>
+                    <span class='compact-lbl'>Players:</span>
+                    <span class='compact-val'>{stats['human_players']:,} Human, {stats['bot_players']:,} Bot</span>
                 </div>
-                <div class='metric-card'>
-                    <div class='metric-val'>{stats['pvp_kills'] + stats['bot_kills']:,}</div>
-                    <div class='metric-lbl'>Total Kills</div>
+                <div class='compact-metric-pill'>
+                    <span class='compact-lbl'>Total Kills:</span>
+                    <span class='compact-val'>{stats['pvp_kills'] + stats['bot_kills']:,}</span>
                 </div>
-                <div class='metric-card'>
-                    <div class='metric-val'>{stats['storm_deaths']:,}</div>
-                    <div class='metric-lbl'>Storm Deaths</div>
+                <div class='compact-metric-pill'>
+                    <span class='compact-lbl'>Storm Deaths:</span>
+                    <span class='compact-val'>{stats['storm_deaths']:,}</span>
                 </div>
-                <div class='metric-card'>
-                    <div class='metric-val'>{stats['loot_pickups']:,}</div>
-                    <div class='metric-lbl'>Loot Pickups</div>
+                <div class='compact-metric-pill'>
+                    <span class='compact-lbl'>Loot Pickups:</span>
+                    <span class='compact-val'>{stats['loot_pickups']:,}</span>
                 </div>
             </div>
             """,
