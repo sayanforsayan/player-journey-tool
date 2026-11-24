@@ -1,6 +1,6 @@
 """
 Plotly minimap visualization engine for LILA BLACK player journey replay and heatmaps.
-Tailored for Level Designers with intuitive visuals and plain-English tooltips.
+Responsive across mobile, tablet, and PC with zero emoji clutter.
 """
 
 from pathlib import Path
@@ -13,55 +13,55 @@ import plotly.express as px
 
 MINIMAPS_DIR = Path(__file__).resolve().parent.parent / "minimaps"
 
-# Designer-friendly event styling
+# Clean event styles without emoji icons
 EVENT_STYLES = {
     "Kill": {
-        "name": "⚔️ Player vs Player Kill",
+        "name": "Player vs Player Kill",
         "short_name": "PvP Kill",
-        "color": "#FF2A2A",  # Crimson Red
+        "color": "#E63946",  # Bright Red
         "symbol": "cross",
-        "size": 14,
-        "desc": "Player eliminated another player",
+        "size": 13,
+        "desc": "Player eliminated an opponent",
     },
     "Killed": {
-        "name": "💀 Player vs Player Death",
+        "name": "Player vs Player Death",
         "short_name": "PvP Death",
-        "color": "#7B0000",  # Dark Crimson
+        "color": "#8B0000",  # Dark Crimson
         "symbol": "x",
-        "size": 14,
-        "desc": "Player eliminated by an opponent",
+        "size": 13,
+        "desc": "Player was eliminated by an opponent",
     },
     "BotKill": {
-        "name": "🎯 Player Killed an AI Bot",
+        "name": "Player Killed an AI Bot",
         "short_name": "Bot Kill",
-        "color": "#FF9E00",  # Amber Orange
+        "color": "#F77F00",  # Orange
         "symbol": "triangle-up",
-        "size": 12,
-        "desc": "Player destroyed an AI opponent",
+        "size": 11,
+        "desc": "Player eliminated an AI bot",
     },
     "BotKilled": {
-        "name": "🛑 Player Died to an AI Bot",
+        "name": "Player Died to an AI Bot",
         "short_name": "Killed by Bot",
-        "color": "#B5179E",  # Purple
+        "color": "#9D4EDD",  # Purple
         "symbol": "triangle-down",
-        "size": 12,
-        "desc": "Player was killed by an AI bot",
+        "size": 11,
+        "desc": "Player was eliminated by an AI bot",
     },
     "KilledByStorm": {
-        "name": "⚡ Died to the Storm Ring",
+        "name": "Eliminated by Storm Ring",
         "short_name": "Storm Death",
-        "color": "#00F0FF",  # Neon Cyan
+        "color": "#00F0FF",  # Cyan
         "symbol": "hexagon",
-        "size": 15,
-        "desc": "Player trapped & eliminated by storm",
+        "size": 14,
+        "desc": "Player died to the storm wall",
     },
     "Loot": {
-        "name": "📦 Loot Pickup",
-        "short_name": "Loot",
-        "color": "#FFD166",  # Bright Gold
+        "name": "Loot Pickup",
+        "short_name": "Loot Pickup",
+        "color": "#FFD166",  # Gold
         "symbol": "diamond",
         "size": 8,
-        "desc": "Item scavenged from map",
+        "desc": "Item collected from map",
     },
 }
 
@@ -71,16 +71,16 @@ MAP_FILENAMES = {
     "Lockdown": "Lockdown_Minimap.jpg",
 }
 
-# Qualitative colors for individual player trajectories
+# High-contrast color palette for player trails
 PLAYER_PALETTE = [
     "#3A86FF",  # Vivid Blue
     "#FF006E",  # Magenta
     "#FB5607",  # Orange
     "#8338EC",  # Purple
-    "#06D6A0",  # Teal/Emerald
-    "#FFBE0B",  # Yellow
-    "#118AB2",  # Ocean Blue
-    "#073B4C",  # Deep Navy
+    "#06D6A0",  # Green
+    "#FFBE0B",  # Gold
+    "#00B4D8",  # Sky Blue
+    "#E63946",  # Red
 ]
 
 
@@ -94,17 +94,17 @@ def get_elevation_label(y_val: float, map_id: str) -> str:
     """Provide level design elevation context based on map terrain."""
     if map_id == "AmbroseValley":
         if y_val > 130:
-            return "High Ground / Hilltop"
+            return "High Ground (Hilltop)"
         elif y_val < 95:
-            return "Low Valley / Riverbed"
+            return "Low Ground (Valley / Riverbed)"
         return "Mid Elevation"
     elif map_id == "GrandRift":
         if y_val > 35:
-            return "Canyon Rim / Bridge"
-        return "Lower Gorge"
+            return "Upper Rim / Bridge"
+        return "Gorge Floor"
     else:
         if y_val > 55:
-            return "Upper Catwalk / Floor 2"
+            return "Upper Level (Catwalk)"
         return "Ground Floor"
 
 
@@ -122,7 +122,7 @@ def get_minimap_image(map_id: str) -> Optional[Image.Image]:
 
 
 def create_base_minimap_figure(map_id: str) -> go.Figure:
-    """Create a Plotly figure with the 1024x1024 minimap background."""
+    """Create a responsive Plotly figure with the 1024x1024 minimap background."""
     fig = go.Figure()
     img = get_minimap_image(map_id)
 
@@ -144,7 +144,7 @@ def create_base_minimap_figure(map_id: str) -> go.Figure:
             )
         )
 
-    # Configure 1:1 aspect ratio with inverted Y-axis (top-left is 0,0)
+    # 1:1 aspect ratio with inverted Y-axis (top-left is 0,0)
     fig.update_xaxes(
         range=[0, 1024],
         showgrid=False,
@@ -153,7 +153,7 @@ def create_base_minimap_figure(map_id: str) -> go.Figure:
         fixedrange=False,
     )
     fig.update_yaxes(
-        range=[1024, 0],  # Inverted range: 0 is top
+        range=[1024, 0],
         scaleanchor="x",
         scaleratio=1,
         showgrid=False,
@@ -162,21 +162,27 @@ def create_base_minimap_figure(map_id: str) -> go.Figure:
         fixedrange=False,
     )
 
+    # Responsive layout: autosize=True, no fixed width
     fig.update_layout(
-        plot_bgcolor="#0A0C10",
-        paper_bgcolor="#0A0C10",
-        margin=dict(l=10, r=10, t=30, b=10),
-        width=820,
-        height=820,
+        autosize=True,
+        height=680,
+        plot_bgcolor="#11141A",
+        paper_bgcolor="#11141A",
+        margin=dict(l=5, r=5, t=35, b=5),
+        hoverlabel=dict(
+            bgcolor="#1E232E",
+            bordercolor="#38BDF8",
+            font=dict(color="#FFFFFF", size=12),
+        ),
         legend=dict(
             orientation="h",
             yanchor="bottom",
             y=1.02,
             xanchor="left",
             x=0,
-            font=dict(color="#E6EDF3", size=11),
-            bgcolor="rgba(10, 12, 16, 0.85)",
-            bordercolor="#30363D",
+            font=dict(color="#E2E8F0", size=11),
+            bgcolor="rgba(17, 20, 26, 0.9)",
+            bordercolor="#334155",
             borderwidth=1,
         ),
         dragmode="pan",
@@ -224,7 +230,7 @@ def render_match_replay(
 
             is_bot = bool(user_data["is_bot"].iloc[0])
             user_color = (
-                "#8B949E"
+                "#94A3B8"
                 if is_bot
                 else PLAYER_PALETTE[idx % len(PLAYER_PALETTE)]
             )
@@ -239,7 +245,7 @@ def render_match_replay(
                     name=name_label,
                     line=dict(
                         color=user_color,
-                        width=1.5 if is_bot else 2.8,
+                        width=1.5 if is_bot else 2.6,
                         dash="dot" if is_bot else "solid",
                     ),
                     opacity=0.45 if is_bot else 0.85,
@@ -251,7 +257,7 @@ def render_match_replay(
             # Player head position (current location)
             last_point = user_data.iloc[-1]
             time_since_move = current_time_sec - last_point["match_time_sec"]
-            is_active = time_since_move <= 45.0  # Active within last 45s
+            is_active = time_since_move <= 45.0
 
             elev_label = get_elevation_label(last_point["y"], map_id)
             point_time_str = format_time_mmss(last_point["match_time_sec"])
@@ -278,9 +284,9 @@ def render_match_replay(
                     ]],
                     hovertemplate=(
                         "<b>%{customdata[0]}</b><br>"
-                        "🕒 Match Time: %{customdata[2]}<br>"
+                        "Time: %{customdata[2]}<br>"
                         "Status: %{customdata[1]}<br>"
-                        "Height: %{customdata[3]:.1f}m (%{customdata[4]})<extra></extra>"
+                        "Elevation: %{customdata[3]:.1f}m (%{customdata[4]})<extra></extra>"
                     ),
                     showlegend=False,
                 )
@@ -334,8 +340,8 @@ def render_match_replay(
                     hovertemplate=(
                         f"<b>{style['short_name']}</b><br>"
                         "%{customdata[1]}<br>"
-                        "Involved: %{customdata[0]}<br>"
-                        "🕒 Time: %{customdata[2]}<br>"
+                        "Actor: %{customdata[0]}<br>"
+                        "Time: %{customdata[2]}<br>"
                         "Elevation: %{customdata[3]}m (%{customdata[4]})<extra></extra>"
                     ),
                     showlegend=True,
@@ -345,7 +351,7 @@ def render_match_replay(
     fig.update_layout(
         title=dict(
             text=f"Match Replay • Timeline: <b>{time_str}</b>",
-            font=dict(color="#00D2FF", size=16),
+            font=dict(color="#38BDF8", size=15),
             x=0.01,
             y=0.98,
         )
@@ -363,7 +369,7 @@ def render_aggregate_heatmap(
     show_bots: bool = True,
 ) -> go.Figure:
     """
-    Render 2D density heatmap overlay on the minimap for level designers.
+    Render responsive 2D density heatmap overlay on the minimap for level designers.
     """
     fig = create_base_minimap_figure(map_id)
 
@@ -380,22 +386,21 @@ def render_aggregate_heatmap(
     if map_df.empty:
         return fig
 
-    # Map friendly targets
     title_text = "Heatmap"
     if heatmap_type == "movement":
-        title_text = "👣 Player Footsteps & High-Traffic Paths"
+        title_text = "Player Movement Paths & High-Traffic Arteries"
         heat_data = map_df[map_df["event"].isin(["Position", "BotPosition"])]
     elif heatmap_type == "combat":
-        title_text = "⚔️ Firefights & Kill Hotspots (Choke Points)"
+        title_text = "Firefights & Kill Hotspots (Choke Points)"
         heat_data = map_df[map_df["event"].isin(["Kill", "BotKill"])]
     elif heatmap_type == "deaths":
-        title_text = "💀 Player Elimination & Danger Zones"
+        title_text = "Player Elimination & Danger Hotspots"
         heat_data = map_df[map_df["event"].isin(["Killed", "BotKilled", "KilledByStorm"])]
     elif heatmap_type == "storm":
-        title_text = "⚡ Storm Ring Deaths (Extraction Traps)"
+        title_text = "Storm Ring Eliminations (Zone Traps)"
         heat_data = map_df[map_df["event"] == "KilledByStorm"]
     elif heatmap_type == "loot":
-        title_text = "📦 Loot Pickup Hotspots"
+        title_text = "Loot Pickup Density"
         heat_data = map_df[map_df["event"] == "Loot"]
     else:
         heat_data = map_df
@@ -406,7 +411,7 @@ def render_aggregate_heatmap(
             x=512,
             y=512,
             showarrow=False,
-            font=dict(color="#FF9E00", size=16),
+            font=dict(color="#F59E0B", size=15),
         )
         return fig
 
@@ -418,21 +423,21 @@ def render_aggregate_heatmap(
             colorscale=colorscale,
             reversescale=False,
             showscale=True,
-            ncontours=28,
+            ncontours=26,
             contours=dict(coloring="heatmap", showlines=False),
             opacity=opacity,
             colorbar=dict(
-                title=dict(text="Density", font=dict(color="#E6EDF3", size=11)),
-                tickfont=dict(color="#8B949E", size=10),
+                title=dict(text="Density", font=dict(color="#E2E8F0", size=11)),
+                tickfont=dict(color="#94A3B8", size=10),
                 len=0.7,
                 y=0.5,
-                thickness=16,
+                thickness=14,
             ),
             hoverinfo="skip",
         )
     )
 
-    # For rare/critical events (like Storm Deaths or PvP Kills), overlay individual pins
+    # Overlay scatter pins for incident points
     if heatmap_type in ["storm", "deaths", "combat"]:
         sample_pins = heat_data.head(500)
         time_labels = [format_time_mmss(t) for t in sample_pins["match_time_sec"]]
@@ -443,7 +448,7 @@ def render_aggregate_heatmap(
                 mode="markers",
                 marker=dict(
                     size=7,
-                    color="#00FFFF" if heatmap_type == "storm" else "#FF2A2A",
+                    color="#00F0FF" if heatmap_type == "storm" else "#EF4444",
                     line=dict(color="#000000", width=1),
                     opacity=0.85,
                 ),
@@ -467,7 +472,7 @@ def render_aggregate_heatmap(
     fig.update_layout(
         title=dict(
             text=f"{title_text} — {map_id}",
-            font=dict(color="#00D2FF", size=16),
+            font=dict(color="#38BDF8", size=15),
             x=0.01,
             y=0.98,
         )

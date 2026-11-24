@@ -1,10 +1,10 @@
 """
 Data loader and filtering module for LILA BLACK player telemetry data.
-Designed with friendly helpers for Level Designers.
+Clean, professional data helpers with zero emoji clutter and full mobile/tablet compatibility.
 """
 
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 import pandas as pd
 import streamlit as st
 
@@ -22,7 +22,7 @@ MAP_CONFIGS = {
     },
     "GrandRift": {
         "display_name": "Grand Rift",
-        "tagline": "Canyon & Chasm (581m)",
+        "tagline": "Canyon and Chasm (581m)",
         "description": "Bisected by a deep gorge with bridge crossings and rapid lane rotations.",
         "scale": 581.0,
         "origin_x": -290.0,
@@ -88,8 +88,8 @@ def get_available_dates(df: pd.DataFrame, map_id: Optional[str] = None) -> List[
 @st.cache_data
 def get_match_catalogue(df: pd.DataFrame, map_id: str, date: Optional[str] = None) -> List[Dict]:
     """
-    Build a human-friendly list of matches for level designers.
-    Provides duration in MM:SS, player count, and key highlights.
+    Build a clean, readable list of matches for level designers.
+    Zero emoji symbols, clear text tags.
     """
     mask = df["map_id"] == map_id
     if date and date != "All Dates":
@@ -99,7 +99,6 @@ def get_match_catalogue(df: pd.DataFrame, map_id: str, date: Optional[str] = Non
     if subset.empty:
         return []
 
-    # Aggregate key stats per match
     grouped = subset.groupby("clean_match_id", observed=True).agg(
         date=("date", "first"),
         duration_sec=("match_time_sec", "max"),
@@ -119,18 +118,17 @@ def get_match_catalogue(df: pd.DataFrame, map_id: str, date: Optional[str] = Non
         total_kills = row["pvp_kills"] + row["bot_kills"]
         storm = row["storm_deaths"]
 
-        # Build friendly label
         tags = []
         if storm > 0:
-            tags.append(f"⚡ {storm} Storm Death")
+            tags.append(f"{storm} Storm Death{'s' if storm > 1 else ''}")
         if row["pvp_kills"] > 0:
-            tags.append(f"⚔️ {row['pvp_kills']} PvP Kill")
+            tags.append(f"{row['pvp_kills']} PvP Kill{'s' if row['pvp_kills'] > 1 else ''}")
         elif total_kills > 0:
-            tags.append(f"🎯 {total_kills} Kills")
+            tags.append(f"{total_kills} Kill{'s' if total_kills > 1 else ''}")
 
-        tag_str = f" • {', '.join(tags)}" if tags else ""
+        tag_str = f" | {', '.join(tags)}" if tags else ""
         friendly_label = (
-            f"Match {mid[:8]}... ({dur_str} • {row['human_users']} Player{'s' if row['human_users'] != 1 else ''}{tag_str})"
+            f"Match {mid[:8]}... ({dur_str} | {row['human_users']} Player{'s' if row['human_users'] != 1 else ''}{tag_str})"
         )
 
         matches.append({
@@ -149,7 +147,7 @@ def get_match_catalogue(df: pd.DataFrame, map_id: str, date: Optional[str] = Non
 
 
 def get_match_info(df: pd.DataFrame, match_id: str) -> Dict:
-    """Extract metadata for a specific match with designer-friendly formatting."""
+    """Extract metadata for a specific match with clean formatting."""
     match_df = df[df["clean_match_id"] == match_id]
     if match_df.empty:
         return {}

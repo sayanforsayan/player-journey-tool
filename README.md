@@ -1,4 +1,4 @@
-# 🎯 LILA BLACK — Player Journey Visualization Tool
+# LILA BLACK — Player Journey Visualization Tool
 > **Product Engineer Written Test Deliverable for LILA Games**  
 > A high-performance, web-based telemetry and level design analytics suite built for **LILA BLACK** (an extraction shooter).
 
@@ -8,38 +8,38 @@
 
 ---
 
-## 🌐 Live Web Application
-- **Live Streamlit App:** [https://player-journey-tool-sayanforsayan.streamlit.app](https://player-journey-tool-sayanforsayan.streamlit.app) *(Deploy via Streamlit Community Cloud)*
+## Live Web Application
+- **Live Streamlit App:** [https://player-journey-tool-sayanforsayan.streamlit.app](https://player-journey-tool-sayanforsayan.streamlit.app)
 - **GitHub Repository:** [https://github.com/sayanforsayan/player-journey-tool](https://github.com/sayanforsayan/player-journey-tool)
 
 ---
 
-## 📌 Deliverable Documents
+## Deliverable Documents
 1. **[ARCHITECTURE.md](ARCHITECTURE.md)**: 1-page system design document detailing data pipeline baking, coordinate projection math, and data nuances.
 2. **[INSIGHTS.md](INSIGHTS.md)**: 3 actionable gameplay insights for Level Designers backed by empirical telemetry stats (Storm choke points, AI bot elevation combat, and map dead zones).
 
 ---
 
-## 🎮 Key Features
+## Key Features
 
-### 1. 🎬 Match Journey Replay
-- **Timeline Playback Scrubber:** Scrub match time from $0\text{s}$ to match end (up to $890\text{s}$ / $\sim 15$ mins) to observe player paths unfold in chronological order.
-- **Human vs. AI Differentiation:** Human players render with solid, distinct color-coded lines and UUID tooltips; AI bots render with dashed paths and numeric IDs.
+### 1. Match Journey Replay
+- **Timeline Playback Scrubber:** Scrub match time from 00:00 to match end (up to ~15 mins) to observe player paths unfold in chronological order.
+- **Human vs. AI Differentiation:** Human players render with solid, distinct color-coded lines; AI bots render with dashed paths.
 - **Discrete Event Markers:** Real-time visual markers for PvP Kills, PvP Deaths, Bot Kills, Bot Deaths, Storm Eliminations, and Loot Pickups.
-- **Combat Log:** Chronological, filterable match feed showing all combat and loot events.
+- **Combat Log:** Chronological, filterable match feed showing all combat and loot events with elevation context.
 
-### 2. 🔥 Aggregate Heatmaps
+### 2. Aggregate Heatmaps
 - **Multi-Match Density Overlays:** Aggregate across 5 days (Feb 10–14, 2026) and 796 matches.
 - **5 Focused Heatmap Modes:**
-  1. *High-Traffic Movement Density* (Player & Bot route volume)
-  2. *Combat & Kill Zones* (Where firefights happen)
+  1. *High-Traffic Movement Paths* (Player and bot route volume)
+  2. *Combat and Kill Hotspots* (Where firefights happen)
   3. *Elimination Hotspots* (Where players die)
   4. *Storm Ring Deaths* (Zone bottlenecks and failed extractions)
   5. *Loot Distribution* (Resource collection density)
-- **Visual Controls:** Adjustable overlay opacity, custom color palettes (`Inferno`, `Hot`, `Turbo`, `Viridis`), and incident pins.
+- **Visual Controls:** Adjustable overlay transparency, custom color palettes, and incident pins.
 
-### 3. 📊 Level Designer KPI Dashboard
-- Immediate real-time metrics: Total Matches, Human/Bot Player counts, Total Kills, Storm Fatalities, and Loot pickups.
+### 3. Level Design Insights Tab
+- Actionable map-specific observations and recommendations tailored for Level Designers.
 
 ---
 
