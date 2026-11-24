@@ -1,7 +1,7 @@
 """
 LILA BLACK — Player Journey Visualization Tool
-Organized sidebar with color indicators.
-Main screen displays only the Map Title (no subtitle), Playback Timeline, and Minimap Canvas.
+All configuration in left sidebar.
+Main screen: Title (clean & unclipped), Timeline, Match Metrics, Color Indicators, and Map View with bottom gap.
 """
 
 import streamlit as st
@@ -25,7 +25,7 @@ from src.map_renderer import (
     EVENT_STYLES,
 )
 
-# Page configuration
+# Responsive Page configuration
 st.set_page_config(
     page_title="LILA BLACK — Level Design Telemetry",
     page_icon=None,
@@ -33,70 +33,133 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# Clean, professional styling
+# Custom High-Contrast Styling: Clears Streamlit fixed header to prevent title cutoff
 st.markdown(
     """
     <style>
-        /* Main page layout */
+        /* Transparent Streamlit Header to prevent header clipping */
+        header[data-testid="stHeader"] {
+            background-color: transparent !important;
+            z-index: 50 !important;
+        }
+
+        /* Main container: adequate top padding clears fixed header, bottom padding gives map room */
         .block-container {
-            padding-top: 1.2rem !important;
-            padding-bottom: 1.5rem !important;
+            padding-top: 4.5rem !important;
+            padding-bottom: 3.5rem !important;
             padding-left: 1.5rem !important;
             padding-right: 1.5rem !important;
             max-width: 100% !important;
         }
+        @media (max-width: 768px) {
+            .block-container {
+                padding-top: 4.8rem !important;
+                padding-left: 1rem !important;
+                padding-right: 1rem !important;
+            }
+        }
 
-        /* Clean Map Title (No cutoff, no subtitle) */
-        .map-title-container {
-            padding-top: 0.2rem;
-            padding-bottom: 0.8rem;
-            margin-bottom: 0.6rem;
+        /* Large, Unclipped Map Title (ONLY Map Name, No Subtitle) */
+        .map-title-wrapper {
+            margin-top: 0.2rem;
+            margin-bottom: 0.8rem;
+            padding-bottom: 0.5rem;
             border-bottom: 2px solid #1E293B;
         }
         .main-map-title {
-            font-size: 2.2rem !important;
-            font-weight: 700 !important;
+            font-size: 2.3rem !important;
+            font-weight: 800 !important;
             color: #38BDF8 !important;
             margin: 0 !important;
+            padding: 0 !important;
             line-height: 1.2 !important;
+            letter-spacing: -0.02em;
+        }
+        @media (max-width: 768px) {
+            .main-map-title {
+                font-size: 1.8rem !important;
+            }
         }
 
-        /* Playback Timeline Badge */
+        /* Timeline Badge */
         .timeline-badge {
             display: inline-block;
             background-color: #0F172A;
             border: 1px solid #334155;
             border-radius: 6px;
-            padding: 5px 14px;
-            font-size: 0.9rem;
+            padding: 4px 12px;
+            font-size: 0.88rem;
             color: #E2E8F0;
-            margin-bottom: 8px;
+            margin-top: -4px;
+            margin-bottom: 10px;
         }
         .timeline-badge b {
             color: #38BDF8;
         }
 
-        /* Color Indicator List in Sidebar */
-        .indicator-box {
+        /* Responsive Match Metrics Grid (Above Color Indicators) */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .metric-card {
             background-color: #0F172A;
             border: 1px solid #1E293B;
             border-radius: 8px;
             padding: 10px 12px;
-            margin-top: 8px;
-            font-size: 0.82rem;
-            color: #E2E8F0;
-            line-height: 1.8;
+            text-align: center;
         }
-        .color-dot {
-            display: inline-block;
-            width: 11px;
-            height: 11px;
-            border-radius: 50%;
-            margin-right: 7px;
-            vertical-align: middle;
+        .metric-val {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #38BDF8;
+            line-height: 1.2;
+        }
+        .metric-lbl {
+            font-size: 0.75rem;
+            color: #94A3B8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 3px;
         }
 
-        /* Section dividers in sidebar */
+        /* Responsive Horizontal Color Indicators (Under Timeline & Metrics, Above Map) */
+        .indicators-strip {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px 18px;
+            background-color: #0F172A;
+            border: 1px solid #1E293B;
+            border-radius: 8px;
+            padding: 10px 14px;
+            margin-bottom: 16px;
+            font-size: 0.82rem;
+            color: #E2E8F0;
+        }
+        .indicator-item {
+            display: inline-flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+        .indicator-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 6px;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+
+        /* Bottom Spacing under Map View Section */
+        .map-bottom-gap {
+            height: 45px;
+            width: 100%;
+        }
+
+        /* Sidebar Section Headers */
         .sidebar-section-header {
             font-size: 0.8rem;
             font-weight: 700;
@@ -126,7 +189,7 @@ def main():
         return
 
     # =========================================================================
-    # LEFT SIDEBAR: FULLY ORGANIZED IN SECTIONS
+    # LEFT SIDEBAR: ALL CONTROLS, DROPDOWNS & FILTER CONFIGURATION
     # =========================================================================
     st.sidebar.markdown("## LILA BLACK")
     st.sidebar.caption("Level Design Telemetry Suite")
@@ -134,9 +197,9 @@ def main():
 
     # --- SECTION 1: MAP & DATE ---
     st.sidebar.markdown("<div class='sidebar-section-header'>1. Select Map & Date</div>", unsafe_allow_html=True)
-    
+
     maps = get_available_maps(df)
-    # Map names mention Primary, Secondary, Close-Quarters in selector
+    # Sidebar dropdown includes Primary, Secondary, Close-Quarters labels
     map_labels = {
         "AmbroseValley": "Ambrose Valley (Primary Map)",
         "GrandRift": "Grand Rift (Secondary Map)",
@@ -150,13 +213,13 @@ def main():
         label_visibility="collapsed",
     )
 
-    # Clean title text for main screen (ONLY the map name)
-    clean_map_titles = {
+    # Clean title text for Main Screen (ONLY Map Name, No Subtitle)
+    clean_map_names = {
         "AmbroseValley": "Ambrose Valley",
         "GrandRift": "Grand Rift",
         "Lockdown": "Lockdown",
     }
-    main_title_text = clean_map_titles.get(selected_map_key, selected_map_key)
+    main_title_text = clean_map_names.get(selected_map_key, selected_map_key)
 
     dates = ["All Dates (Feb 10 - 14)"] + get_available_dates(df, selected_map_key)
     selected_date_label = st.sidebar.selectbox("Date", options=dates, index=0)
@@ -178,7 +241,7 @@ def main():
 
     st.sidebar.markdown("---")
 
-    # Initialize state variables
+    # State variables for main screen
     current_time_sec = 0.0
     max_duration_sec = 1.0
     show_paths = True
@@ -192,7 +255,7 @@ def main():
     match_df = None
     match_info = {}
 
-    # --- SECTION 3: MODE-SPECIFIC CONTROLS ---
+    # --- SECTION 3: MODE-SPECIFIC CONTROLS IN SIDEBAR ---
     if view_mode == "Match Replay":
         st.sidebar.markdown("<div class='sidebar-section-header'>3. Match Selection</div>", unsafe_allow_html=True)
         matches = get_match_catalogue(df, selected_map_key, selected_date)
@@ -201,7 +264,7 @@ def main():
             st.sidebar.warning("No matches found for selected date.")
         else:
             match_filter = st.sidebar.selectbox(
-                "Filter Category",
+                "Filter Match Category",
                 options=[
                     "All Matches",
                     "Matches with Storm Deaths",
@@ -227,7 +290,7 @@ def main():
 
             match_options = {m["match_id"]: m["label"] for m in filtered_matches}
             selected_match_id = st.sidebar.selectbox(
-                f"Choose Match ({len(filtered_matches)})",
+                f"Select Match ({len(filtered_matches)})",
                 options=list(match_options.keys()),
                 format_func=lambda mid: match_options[mid],
                 index=0,
@@ -245,16 +308,7 @@ def main():
             show_paths = st.sidebar.checkbox("Movement Trails", value=True)
             show_events = st.sidebar.checkbox("Combat & Loot Icons", value=True)
 
-            st.sidebar.markdown("<div class='sidebar-section-header'>Match Metrics</div>", unsafe_allow_html=True)
-            c1, c2 = st.sidebar.columns(2)
-            c1.metric("Duration", match_info.get("duration_str", "00:00"))
-            c2.metric("Total Kills", match_info.get("player_kills", 0) + match_info.get("bot_kills", 0))
-
-            c3, c4 = st.sidebar.columns(2)
-            c3.metric("Humans / Bots", f"{match_info.get('human_count', 0)} / {match_info.get('bot_count', 0)}")
-            c4.metric("Storm Deaths", match_info.get("storm_deaths", 0))
-
-            with st.sidebar.expander("Chronological Combat Log", expanded=False):
+            with st.sidebar.expander("Chronological Combat Feed", expanded=False):
                 combat_df = match_df[
                     match_df["event"].isin(
                         ["Kill", "Killed", "BotKill", "BotKilled", "KilledByStorm", "Loot"]
@@ -279,7 +333,7 @@ def main():
     elif view_mode == "Map Heatmaps":
         st.sidebar.markdown("<div class='sidebar-section-header'>3. Heatmap Perspective</div>", unsafe_allow_html=True)
         heatmap_choice = st.sidebar.radio(
-            "Select Perspective:",
+            "Perspective:",
             options=[
                 ("movement", "High-Traffic Movement Paths"),
                 ("combat", "Firefights & Kill Hotspots"),
@@ -299,63 +353,28 @@ def main():
         show_humans = st.sidebar.checkbox("Human Players", value=True)
         show_bots = st.sidebar.checkbox("AI Bots", value=True)
 
-        agg_mask = df["map_id"] == selected_map_key
-        if selected_date:
-            agg_mask = agg_mask & (df["date"] == selected_date)
-        filtered_agg_df = df[agg_mask]
-        stats = get_aggregate_stats(filtered_agg_df)
-
-        st.sidebar.markdown("<div class='sidebar-section-header'>Telemetry Metrics</div>", unsafe_allow_html=True)
-        c1, c2 = st.sidebar.columns(2)
-        c1.metric("Matches", f"{stats['total_matches']:,}")
-        c2.metric("Total Kills", f"{stats['pvp_kills'] + stats['bot_kills']:,}")
-
-        c3, c4 = st.sidebar.columns(2)
-        c3.metric("Humans / Bots", f"{stats['human_players']:,} / {stats['bot_players']:,}")
-        c4.metric("Storm Deaths", f"{stats['storm_deaths']:,}")
-
     else:
         st.sidebar.markdown("<div class='sidebar-section-header'>3. Level Design Notes</div>", unsafe_allow_html=True)
-        st.sidebar.info("Review key level design takeaways and recommendations on the main screen.")
-
-    st.sidebar.markdown("---")
-
-    # --- SECTION 5: COLOR INDICATORS (Clean text with color and indicator) ---
-    st.sidebar.markdown(
-        """
-        <div class='sidebar-section-header'>Color Indicators</div>
-        <div class='indicator-box'>
-            <div><span class='color-dot' style='background-color: #38BDF8;'></span><b>Blue:</b> Human Player</div>
-            <div><span class='color-dot' style='background-color: #94A3B8;'></span><b>Gray:</b> AI Bot</div>
-            <div><span class='color-dot' style='background-color: #E63946;'></span><b>Red:</b> Player vs Player Kill</div>
-            <div><span class='color-dot' style='background-color: #8B0000;'></span><b>Dark Red:</b> Player vs Player Death</div>
-            <div><span class='color-dot' style='background-color: #F77F00;'></span><b>Orange:</b> Player Killed AI Bot</div>
-            <div><span class='color-dot' style='background-color: #9D4EDD;'></span><b>Purple:</b> Player Died to AI Bot</div>
-            <div><span class='color-dot' style='background-color: #00F0FF;'></span><b>Cyan:</b> Died to Storm Ring</div>
-            <div><span class='color-dot' style='background-color: #FFD166;'></span><b>Yellow:</b> Loot Pickup</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+        st.sidebar.info("Review key level design takeaways and spatial recommendations on the main screen.")
 
     # =========================================================================
-    # MAIN SCREEN: ONLY MAP TITLE (NO SUBTITLE), TIMELINE & MAP CANVAS
+    # MAIN SCREEN: TITLE (NO SUBTITLE), TIMELINE, METRICS, INDICATORS & MAP
     # =========================================================================
 
-    # 1. Title text: ONLY the Map Name (Large, Bold, Clean, Never Cut Off)
+    # 1. Main Screen Title: ONLY the Map Name (Large, Bold, Cleared Top Padding)
     st.markdown(
         f"""
-        <div class='map-title-container'>
-            <div class='main-map-title'>{main_title_text}</div>
+        <div class='map-title-wrapper'>
+            <h1 class='main-map-title'>{main_title_text}</h1>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
-    # 2. Main screen view based on mode
+    # 2. Replay Mode Flow
     if view_mode == "Match Replay":
         if match_df is not None and not match_df.empty:
-            # Playback Timeline Slider directly on Main Screen
+            # A) Playback Timeline Slider
             current_time_sec = st.slider(
                 "Playback Timeline (Seconds):",
                 min_value=0.0,
@@ -367,13 +386,60 @@ def main():
 
             st.markdown(
                 f"<div class='timeline-badge'>"
-                f"Timeline Playback: <b>{format_seconds_to_mmss(current_time_sec)} / {format_seconds_to_mmss(max_duration_sec)}</b> "
+                f"Playback Time: <b>{format_seconds_to_mmss(current_time_sec)} / {format_seconds_to_mmss(max_duration_sec)}</b> "
                 f"({int((current_time_sec / max_duration_sec) * 100)}% of match elapsed)"
                 f"</div>",
                 unsafe_allow_html=True,
             )
 
-            # Responsive Map Canvas (edge-to-edge, zero clutter)
+            # B) Match Metrics (Above Color Indicators, Responsive Grid)
+            total_kills = match_info.get("player_kills", 0) + match_info.get("bot_kills", 0)
+            st.markdown(
+                f"""
+                <div class='metrics-grid'>
+                    <div class='metric-card'>
+                        <div class='metric-val'>{match_info.get('duration_str', '00:00')}</div>
+                        <div class='metric-lbl'>Duration</div>
+                    </div>
+                    <div class='metric-card'>
+                        <div class='metric-val'>{match_info.get('human_count', 0)} / {match_info.get('bot_count', 0)}</div>
+                        <div class='metric-lbl'>Humans / Bots</div>
+                    </div>
+                    <div class='metric-card'>
+                        <div class='metric-val'>{total_kills}</div>
+                        <div class='metric-lbl'>Total Kills</div>
+                    </div>
+                    <div class='metric-card'>
+                        <div class='metric-val'>{match_info.get('storm_deaths', 0)}</div>
+                        <div class='metric-lbl'>Storm Deaths</div>
+                    </div>
+                    <div class='metric-card'>
+                        <div class='metric-val'>{match_info.get('loot_events', 0)}</div>
+                        <div class='metric-lbl'>Loot Pickups</div>
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+            # C) Color Indicators (Under Playback Timeline and Metrics, Above Map)
+            st.markdown(
+                """
+                <div class='indicators-strip'>
+                    <div class='indicator-item'><span class='indicator-dot' style='background-color: #38BDF8;'></span><b>Blue:</b> Human Player</div>
+                    <div class='indicator-item'><span class='indicator-dot' style='background-color: #94A3B8;'></span><b>Gray:</b> AI Bot</div>
+                    <div class='indicator-item'><span class='indicator-dot' style='background-color: #E63946;'></span><b>Red:</b> Player vs Player Kill</div>
+                    <div class='indicator-item'><span class='indicator-dot' style='background-color: #8B0000;'></span><b>Dark Red:</b> Player vs Player Death</div>
+                    <div class='indicator-item'><span class='indicator-dot' style='background-color: #F77F00;'></span><b>Orange:</b> Player Killed AI Bot</div>
+                    <div class='indicator-item'><span class='indicator-dot' style='background-color: #9D4EDD;'></span><b>Purple:</b> Player Died to AI Bot</div>
+                    <div class='indicator-item'><span class='indicator-dot' style='background-color: #00F0FF;'></span><b>Cyan:</b> Died to Storm Ring</div>
+                    <div class='indicator-item'><span class='indicator-dot' style='background-color: #FFD166;'></span><b>Yellow:</b> Loot Pickup</div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+            # D) Map View Section (Responsive Canvas)
             replay_fig = render_match_replay(
                 match_df=match_df,
                 map_id=selected_map_key,
@@ -390,14 +456,48 @@ def main():
                 use_container_width=True,
                 config={"responsive": True, "scrollZoom": True, "displayModeBar": True},
             )
+
+            # E) Bottom Gap for Map View Section
+            st.markdown("<div class='map-bottom-gap'></div>", unsafe_allow_html=True)
         else:
             st.info("Select a match from the left sidebar to start playback.")
 
+    # 3. Heatmaps Mode Flow
     elif view_mode == "Map Heatmaps":
         agg_mask = df["map_id"] == selected_map_key
         if selected_date:
             agg_mask = agg_mask & (df["date"] == selected_date)
         filtered_agg_df = df[agg_mask]
+        stats = get_aggregate_stats(filtered_agg_df)
+
+        # Aggregate Metrics Grid (Above Map)
+        st.markdown(
+            f"""
+            <div class='metrics-grid'>
+                <div class='metric-card'>
+                    <div class='metric-val'>{stats['total_matches']:,}</div>
+                    <div class='metric-lbl'>Matches</div>
+                </div>
+                <div class='metric-card'>
+                    <div class='metric-val'>{stats['human_players']:,} / {stats['bot_players']:,}</div>
+                    <div class='metric-lbl'>Humans / Bots</div>
+                </div>
+                <div class='metric-card'>
+                    <div class='metric-val'>{stats['pvp_kills'] + stats['bot_kills']:,}</div>
+                    <div class='metric-lbl'>Total Kills</div>
+                </div>
+                <div class='metric-card'>
+                    <div class='metric-val'>{stats['storm_deaths']:,}</div>
+                    <div class='metric-lbl'>Storm Deaths</div>
+                </div>
+                <div class='metric-card'>
+                    <div class='metric-val'>{stats['loot_pickups']:,}</div>
+                    <div class='metric-lbl'>Loot Pickups</div>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
         heat_fig = render_aggregate_heatmap(
             df=filtered_agg_df,
@@ -415,12 +515,15 @@ def main():
             config={"responsive": True, "scrollZoom": True, "displayModeBar": True},
         )
 
+        # Bottom Gap for Heatmap View Section
+        st.markdown("<div class='map-bottom-gap'></div>", unsafe_allow_html=True)
+
+    # 4. Level Design Notes Flow
     else:
-        # Level Design Notes on Main Screen
         if selected_map_key == "AmbroseValley":
             st.markdown(
                 """
-                <div style='background-color: #0F172A; border-left: 4px solid #38BDF8; padding: 14px 18px; border-radius: 0 8px 8px 0; color: #F1F5F9; line-height: 1.6;'>
+                <div style='background-color: #0F172A; border-left: 4px solid #38BDF8; padding: 16px 20px; border-radius: 0 8px 8px 0; color: #F1F5F9; line-height: 1.6;'>
                     <h3 style='color: #38BDF8; margin-top: 0;'>Level Design Observations</h3>
                     <p><b>1. Dead Zone in Northwest Quadrant:</b> Over 78.4% of player traversal occurs along the Southwest-to-Northeast corridor. The Northwest quadrant accounts for less than 4% of total movement.</p>
                     <p><i>Recommendation:</i> Add high-value extraction beacons or infiltration spawns in the Northwest to encourage peripheral exploration.</p>
@@ -433,7 +536,7 @@ def main():
         elif selected_map_key == "Lockdown":
             st.markdown(
                 """
-                <div style='background-color: #0F172A; border-left: 4px solid #38BDF8; padding: 14px 18px; border-radius: 0 8px 8px 0; color: #F1F5F9; line-height: 1.6;'>
+                <div style='background-color: #0F172A; border-left: 4px solid #38BDF8; padding: 16px 20px; border-radius: 0 8px 8px 0; color: #F1F5F9; line-height: 1.6;'>
                     <h3 style='color: #38BDF8; margin-top: 0;'>Level Design Observations</h3>
                     <p><b>1. High Storm Ring Casualties (9.94% of matches):</b> Lockdown has the highest storm fatality rate of any map. Casualties cluster tightly around interior doorways in the southern industrial wing.</p>
                     <p><i>Recommendation:</i> Add secondary egress vents or vertical drop chutes in the southern wing to prevent players getting cornered by the closing storm wall.</p>
@@ -445,7 +548,7 @@ def main():
         else:
             st.markdown(
                 """
-                <div style='background-color: #0F172A; border-left: 4px solid #38BDF8; padding: 14px 18px; border-radius: 0 8px 8px 0; color: #F1F5F9; line-height: 1.6;'>
+                <div style='background-color: #0F172A; border-left: 4px solid #38BDF8; padding: 16px 20px; border-radius: 0 8px 8px 0; color: #F1F5F9; line-height: 1.6;'>
                     <h3 style='color: #38BDF8; margin-top: 0;'>Level Design Observations</h3>
                     <p><b>1. Central Gorge Bridge Choke Points:</b> Player movement and firefights concentrate heavily on the two bridges spanning the central chasm.</p>
                     <p><i>Recommendation:</i> Add lower catwalks or zip-line crossing points across the gorge to provide alternative crossing routes.</p>
@@ -454,6 +557,8 @@ def main():
                 """,
                 unsafe_allow_html=True,
             )
+
+        st.markdown("<div class='map-bottom-gap'></div>", unsafe_allow_html=True)
 
 
 if __name__ == "__main__":
