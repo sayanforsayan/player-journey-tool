@@ -1,7 +1,7 @@
 # Gameplay & Level Design Insights Report
-**Game:** LILA BLACK (Extraction Shooter)  
+**Genre:** Extraction Shooter & Battle Royale  
 **Dataset:** 5 Days of Telemetry Data (Feb 10–14, 2026 | 796 Matches | 89,104 Events)  
-**Audience:** Level Design Team, Combat Balance Team, and Product Leadership  
+**Audience:** Level Design Team, Combat Balance Team, and Game Leadership  
 
 ---
 

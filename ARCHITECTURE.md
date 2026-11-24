@@ -1,13 +1,13 @@
 # System Architecture & Technical Design Document
-**Project:** LILA BLACK — Player Journey Visualization Tool  
-**Target User:** Level Designers & Gameplay Engineers at LILA Games  
-**Author:** Candidate (Product Engineer Written Test)  
+**Project:** Player Journey Visualization Tool  
+**Target User:** Level Designers & Gameplay Engineers  
+**Author:** Game Systems Developer  
 
 ---
 
 ## 1. High-Level System Architecture
 
-The Player Journey Visualization Tool is designed to give Level Designers an intuitive, responsive, and visual way to inspect telemetry data from **LILA BLACK** without requiring database queries or complex data tools.
+The Player Journey Visualization Tool is designed to give Level Designers an intuitive, responsive, and visual way to inspect telemetry data from gameplay sessions without requiring database queries or complex data tools.
 
 ```
 ┌────────────────────────────────┐
@@ -78,7 +78,7 @@ In-game world coordinates $(x, y, z)$ are mapped to a $1024 \times 1024$ 2D mini
 2. **UV Space to Pixel Coordinates ($1024 \times 1024$ Image):**
    $$\text{pixel}_x = u \times 1024$$
    $$\text{pixel}_y = (1 - v) \times 1024$$
-3. **Elevation ($y$):** In LILA BLACK's 3D engine, $y$ represents vertical elevation/height (e.g. altitude from $20\text{m}$ to $165\text{m}$). It is displayed in hover tooltips and metric cards for elevation advantage analysis, but excluded from 2D plane projection.
+3. **Elevation ($y$):** In the 3D game engine, $y$ represents vertical elevation/height (e.g. altitude from $20\text{m}$ to $165\text{m}$). It is displayed in hover tooltips and metric cards for elevation advantage analysis, but excluded from 2D plane projection.
 
 ---
 

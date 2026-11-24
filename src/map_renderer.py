@@ -1,6 +1,6 @@
 """
-Plotly minimap visualization engine for LILA BLACK player journey replay and heatmaps.
-Optimized height (490px) to fit the entire dashboard onto a single viewport without scrolling.
+Plotly minimap visualization engine for player journey replay and heatmaps.
+Responsive across mobile, tablet, and PC with zoom, pan, and home default view controls.
 """
 
 from pathlib import Path
@@ -161,10 +161,10 @@ def create_base_minimap_figure(map_id: str) -> go.Figure:
         fixedrange=False,
     )
 
-    # Height set to 490px so Title + Timeline + Metrics + Map + Color Indicators fit in one screen
+    # Height 540px fills modern monitor screens proportionately without leaving dead space
     fig.update_layout(
         autosize=True,
-        height=490,
+        height=540,
         plot_bgcolor="#0A0C10",
         paper_bgcolor="#0A0C10",
         margin=dict(l=5, r=5, t=5, b=5),
@@ -175,6 +175,12 @@ def create_base_minimap_figure(map_id: str) -> go.Figure:
         ),
         showlegend=False,
         dragmode="pan",
+        modebar=dict(
+            bgcolor="rgba(15, 23, 42, 0.75)",
+            color="#94A3B8",
+            activecolor="#38BDF8",
+            orientation="h",
+        ),
     )
     return fig
 

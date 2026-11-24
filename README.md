@@ -1,21 +1,20 @@
-# LILA BLACK — Player Journey Visualization Tool
-> **Product Engineer Written Test Deliverable for LILA Games**  
-> A high-performance, web-based telemetry and level design analytics suite built for **LILA BLACK** (an extraction shooter).
+# Player Journey Visualization Tool
+> A high-performance, web-based telemetry and level design analytics suite built for extraction shooters and battle-royale gameplay analysis.
 
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://player-journey-tool-sayanforsayan.streamlit.app)
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://player-journey-tool-sayan-jana.streamlit.app/)
 [![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ---
 
 ## Live Web Application
-- **Live Streamlit App:** [https://player-journey-tool-sayanforsayan.streamlit.app](https://player-journey-tool-sayanforsayan.streamlit.app)
+- **Live Hosted Application:** [https://player-journey-tool-sayan-jana.streamlit.app/](https://player-journey-tool-sayan-jana.streamlit.app/)
 - **GitHub Repository:** [https://github.com/sayanforsayan/player-journey-tool](https://github.com/sayanforsayan/player-journey-tool)
 
 ---
 
-## Deliverable Documents
-1. **[ARCHITECTURE.md](ARCHITECTURE.md)**: 1-page system design document detailing data pipeline baking, coordinate projection math, and data nuances.
+## Deliverable Documentation
+1. **[ARCHITECTURE.md](ARCHITECTURE.md)**: System design document detailing data pipeline baking, coordinate projection math, and data nuances.
 2. **[INSIGHTS.md](INSIGHTS.md)**: 3 actionable gameplay insights for Level Designers backed by empirical telemetry stats (Storm choke points, AI bot elevation combat, and map dead zones).
 
 ---
@@ -26,6 +25,7 @@
 - **Timeline Playback Scrubber:** Scrub match time from 00:00 to match end (up to ~15 mins) to observe player paths unfold in chronological order.
 - **Human vs. AI Differentiation:** Human players render with solid, distinct color-coded lines; AI bots render with dashed paths.
 - **Discrete Event Markers:** Real-time visual markers for PvP Kills, PvP Deaths, Bot Kills, Bot Deaths, Storm Eliminations, and Loot Pickups.
+- **Interactive Controls:** Zoom in, Zoom out, Pan, Box Zoom, Home / Default View reset, and Fullscreen toggle.
 - **Combat Log:** Chronological, filterable match feed showing all combat and loot events with elevation context.
 
 ### 2. Aggregate Heatmaps
@@ -39,19 +39,19 @@
 - **Visual Controls:** Adjustable overlay transparency, custom color palettes, and incident pins.
 
 ### 3. Level Design Insights Tab
-- Actionable map-specific observations and recommendations tailored for Level Designers.
+- Actionable map-specific observations and spatial recommendations tailored for Level Designers.
 
 ---
 
-## 📐 Map Configuration & Coordinate Conversion
+## Map Configuration & Coordinate Conversion
 
-All 3 in-game maps are mapped onto $1024 \times 1024$ pixel minimap images:
+All 3 maps are mapped onto 1024x1024 pixel minimap images:
 
-| Map | Scale | Origin X | Origin Z | Minimap Image |
-| :--- | :--- | :--- | :--- | :--- |
-| **Ambrose Valley** | 900 | -370 | -473 | `AmbroseValley_Minimap.png` |
-| **Grand Rift** | 581 | -290 | -290 | `GrandRift_Minimap.png` |
-| **Lockdown** | 1000 | -500 | -500 | `Lockdown_Minimap.jpg` |
+| Map | Scale | Origin X | Origin Z | Minimap Image | Role |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Ambrose Valley** | 900 | -370 | -473 | `AmbroseValley_Minimap.png` | Primary Map |
+| **Grand Rift** | 581 | -290 | -290 | `GrandRift_Minimap.png` | Secondary Map |
+| **Lockdown** | 1000 | -500 | -500 | `Lockdown_Minimap.jpg` | Close-Quarters Map |
 
 ### Coordinate Math:
 $$u = \frac{x - \text{origin}_x}{\text{scale}}, \quad v = \frac{z - \text{origin}_z}{\text{scale}}$$
@@ -61,7 +61,7 @@ $$\text{pixel}_x = u \times 1024, \quad \text{pixel}_y = (1 - v) \times 1024$$
 
 ---
 
-## 🛠️ Project Structure
+## Project Structure
 
 ```
 player-journey-tool/
@@ -86,7 +86,7 @@ player-journey-tool/
 
 ---
 
-## 🚀 Local Setup & Installation
+## Local Setup & Installation
 
 ### 1. Clone the repository
 ```bash
@@ -119,17 +119,13 @@ Open your browser to `http://localhost:8501`.
 
 ---
 
-## ☁️ Deployment Instructions (Streamlit Community Cloud)
+## Deployment (Streamlit Community Cloud)
 
-1. Push all committed changes to GitHub:
-   ```bash
-   git push origin main
-   ```
-2. Navigate to [share.streamlit.io](https://share.streamlit.io).
-3. Click **"New app"**, select `sayanforsayan/player-journey-tool`, branch `main`, and main file path `app.py`.
-4. Click **Deploy**. The app will be live within 2 minutes!
+1. Connect your GitHub repository to [share.streamlit.io](https://share.streamlit.io).
+2. Set main file path to `app.py`.
+3. The app is live at: [https://player-journey-tool-sayan-jana.streamlit.app/](https://player-journey-tool-sayan-jana.streamlit.app/)
 
 ---
 
-## 📄 License
+## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

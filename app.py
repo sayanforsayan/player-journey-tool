@@ -1,7 +1,7 @@
 """
-LILA BLACK — Player Journey Visualization Tool
-Single-viewport responsive dashboard: Title, Timeline, Metrics, Map, and Bottom Indicators
-all visible simultaneously without scrolling.
+Player Journey Visualization Tool
+Level Design Telemetry Suite.
+Responsive across mobile, tablet, and monitor screens with interactive zoom, pan, and home controls.
 """
 
 import streamlit as st
@@ -27,13 +27,13 @@ from src.map_renderer import (
 
 # Page configuration
 st.set_page_config(
-    page_title="LILA BLACK — Level Design Telemetry",
+    page_title="Player Journey Tool — Level Design Telemetry",
     page_icon=None,
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
-# High-efficiency Single-Viewport Styling
+# Responsive Layout Styling for Monitor and Mobile
 st.markdown(
     """
     <style>
@@ -44,9 +44,9 @@ st.markdown(
             z-index: 50 !important;
         }
 
-        /* Container padding tuned to fit everything into one screen */
+        /* Container padding: clean top clearance and zero dead bottom space */
         .block-container {
-            padding-top: 2.4rem !important;
+            padding-top: 2.5rem !important;
             padding-bottom: 0.5rem !important;
             padding-left: 1.2rem !important;
             padding-right: 1.2rem !important;
@@ -69,7 +69,7 @@ st.markdown(
             padding-bottom: 2px;
         }
         .main-map-title {
-            font-size: 1.45rem !important;
+            font-size: 1.5rem !important;
             font-weight: 800 !important;
             color: #38BDF8 !important;
             margin: 0 !important;
@@ -142,7 +142,7 @@ st.markdown(
             border-radius: 6px;
             padding: 4px 10px;
             margin-top: 4px;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
             font-size: 0.74rem;
             color: #E2E8F0;
         }
@@ -190,9 +190,9 @@ def main():
         return
 
     # =========================================================================
-    # LEFT SIDEBAR: CONTROLS, DROPDOWNS & FILTER CONFIGURATION
+    # LEFT SIDEBAR: ALL CONTROLS & FILTER CONFIGURATION
     # =========================================================================
-    st.sidebar.markdown("## LILA BLACK")
+    st.sidebar.markdown("## Player Journey Tool")
     st.sidebar.caption("Level Design Telemetry Suite")
     st.sidebar.markdown("---")
 
@@ -200,6 +200,7 @@ def main():
     st.sidebar.markdown("<div class='sidebar-section-header'>1. Select Map & Date</div>", unsafe_allow_html=True)
 
     maps = get_available_maps(df)
+    # Sidebar dropdown includes Primary, Secondary, Close-Quarters labels
     map_labels = {
         "AmbroseValley": "Ambrose Valley (Primary Map)",
         "GrandRift": "Grand Rift (Secondary Map)",
@@ -360,6 +361,21 @@ def main():
     # MAIN SCREEN: SINGLE-VIEWPORT COMPACT FLOW (NO SCROLLING)
     # =========================================================================
 
+    # Plotly interactive configuration with zoom, pan, home, and fullscreen icons
+    map_config = {
+        "responsive": True,
+        "scrollZoom": True,
+        "displayModeBar": True,
+        "modeBarButtonsToAdd": [
+            "resetScale2d",  # Home / Default View
+            "zoomIn2d",      # Zoom In (+)
+            "zoomOut2d",     # Zoom Out (-)
+            "pan2d",         # Pan Tool
+            "zoom2d",        # Box Zoom
+        ],
+        "displaylogo": False,
+    }
+
     if view_mode == "Match Replay":
         if match_df is not None and not match_df.empty:
             # 1. Top Row: Title (Left) and Timeline Badge (Right)
@@ -375,7 +391,7 @@ def main():
                 unsafe_allow_html=True,
             )
 
-            # 2. Compact Timeline Slider (No redundant label)
+            # 2. Compact Timeline Slider
             current_time_sec = st.slider(
                 "Timeline",
                 min_value=0.0,
@@ -429,7 +445,7 @@ def main():
                 unsafe_allow_html=True,
             )
 
-            # 4. Map Canvas (Single-screen responsive height)
+            # 4. Map Canvas (With Zoom, Pan, Home, and Fullscreen Controls)
             replay_fig = render_match_replay(
                 match_df=match_df,
                 map_id=selected_map_key,
@@ -444,7 +460,7 @@ def main():
             st.plotly_chart(
                 replay_fig,
                 use_container_width=True,
-                config={"responsive": True, "scrollZoom": True, "displayModeBar": False},
+                config=map_config,
             )
 
             # 5. Color Indicators at the BOTTOM of the Map
@@ -526,7 +542,7 @@ def main():
         st.plotly_chart(
             heat_fig,
             use_container_width=True,
-            config={"responsive": True, "scrollZoom": True, "displayModeBar": False},
+            config=map_config,
         )
 
     else:

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Preprocess raw player telemetry parquet files from LILA BLACK.
+Preprocess raw player telemetry parquet files from game sessions.
 Bakes 1,243 separate files across 5 days into a single optimized master parquet file.
 """
 
@@ -12,7 +12,7 @@ from pathlib import Path
 import pandas as pd
 import pyarrow.parquet as pq
 
-# Map configuration specs provided in LILA BLACK README
+# Map configuration specs provided in telemetry README
 MAP_CONFIGS = {
     "AmbroseValley": {
         "scale": 900.0,
@@ -179,7 +179,7 @@ def preprocess(input_dir: str, output_path: str):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Preprocess LILA BLACK player telemetry data")
+    parser = argparse.ArgumentParser(description="Preprocess player telemetry data")
     parser.add_argument(
         "--input-dir",
         default="/Users/sayanjana/player_data",

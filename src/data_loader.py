@@ -1,5 +1,5 @@
 """
-Data loader and filtering module for LILA BLACK player telemetry data.
+Data loader and filtering module for player telemetry data.
 Clean, professional data helpers with zero emoji clutter and full mobile/tablet compatibility.
 """
 
