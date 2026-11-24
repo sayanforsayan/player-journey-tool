@@ -1,6 +1,6 @@
 """
 Plotly minimap visualization engine for LILA BLACK player journey replay and heatmaps.
-Responsive across mobile, tablet, and PC with zero emoji clutter.
+Clean, border-to-border minimap canvas with zero title cutoffs or overlapping legends.
 """
 
 from pathlib import Path
@@ -9,7 +9,6 @@ from PIL import Image
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
-import plotly.express as px
 
 MINIMAPS_DIR = Path(__file__).resolve().parent.parent / "minimaps"
 
@@ -73,14 +72,14 @@ MAP_FILENAMES = {
 
 # High-contrast color palette for player trails
 PLAYER_PALETTE = [
-    "#3A86FF",  # Vivid Blue
-    "#FF006E",  # Magenta
-    "#FB5607",  # Orange
-    "#8338EC",  # Purple
-    "#06D6A0",  # Green
-    "#FFBE0B",  # Gold
-    "#00B4D8",  # Sky Blue
-    "#E63946",  # Red
+    "#38BDF8",  # Sky Blue
+    "#F43F5E",  # Rose
+    "#FB923C",  # Orange
+    "#A855F7",  # Purple
+    "#34D399",  # Emerald
+    "#FACC15",  # Yellow
+    "#22D3EE",  # Cyan
+    "#E11D48",  # Red
 ]
 
 
@@ -162,29 +161,19 @@ def create_base_minimap_figure(map_id: str) -> go.Figure:
         fixedrange=False,
     )
 
-    # Responsive layout: autosize=True, no fixed width
+    # Clean layout with no internal titles or overlapping legends (all shown in left sidebar)
     fig.update_layout(
         autosize=True,
-        height=680,
-        plot_bgcolor="#11141A",
-        paper_bgcolor="#11141A",
-        margin=dict(l=5, r=5, t=35, b=5),
+        height=720,
+        plot_bgcolor="#0A0C10",
+        paper_bgcolor="#0A0C10",
+        margin=dict(l=10, r=10, t=10, b=10),
         hoverlabel=dict(
             bgcolor="#1E232E",
             bordercolor="#38BDF8",
             font=dict(color="#FFFFFF", size=12),
         ),
-        legend=dict(
-            orientation="h",
-            yanchor="bottom",
-            y=1.02,
-            xanchor="left",
-            x=0,
-            font=dict(color="#E2E8F0", size=11),
-            bgcolor="rgba(17, 20, 26, 0.9)",
-            bordercolor="#334155",
-            borderwidth=1,
-        ),
+        showlegend=False,
         dragmode="pan",
     )
     return fig
@@ -217,8 +206,6 @@ def render_match_replay(
 
     active_match_df = match_df[mask]
     current_df = active_match_df[active_match_df["match_time_sec"] <= current_time_sec]
-
-    time_str = format_time_mmss(current_time_sec)
 
     # 1. Player & Bot Movement Trails
     if show_paths and not current_df.empty:
@@ -344,18 +331,10 @@ def render_match_replay(
                         "Time: %{customdata[2]}<br>"
                         "Elevation: %{customdata[3]}m (%{customdata[4]})<extra></extra>"
                     ),
-                    showlegend=True,
+                    showlegend=False,
                 )
             )
 
-    fig.update_layout(
-        title=dict(
-            text=f"Match Replay • Timeline: <b>{time_str}</b>",
-            font=dict(color="#38BDF8", size=15),
-            x=0.01,
-            y=0.98,
-        )
-    )
     return fig
 
 
@@ -386,21 +365,15 @@ def render_aggregate_heatmap(
     if map_df.empty:
         return fig
 
-    title_text = "Heatmap"
     if heatmap_type == "movement":
-        title_text = "Player Movement Paths & High-Traffic Arteries"
         heat_data = map_df[map_df["event"].isin(["Position", "BotPosition"])]
     elif heatmap_type == "combat":
-        title_text = "Firefights & Kill Hotspots (Choke Points)"
         heat_data = map_df[map_df["event"].isin(["Kill", "BotKill"])]
     elif heatmap_type == "deaths":
-        title_text = "Player Elimination & Danger Hotspots"
         heat_data = map_df[map_df["event"].isin(["Killed", "BotKilled", "KilledByStorm"])]
     elif heatmap_type == "storm":
-        title_text = "Storm Ring Eliminations (Zone Traps)"
         heat_data = map_df[map_df["event"] == "KilledByStorm"]
     elif heatmap_type == "loot":
-        title_text = "Loot Pickup Density"
         heat_data = map_df[map_df["event"] == "Loot"]
     else:
         heat_data = map_df
@@ -465,16 +438,8 @@ def render_aggregate_heatmap(
                     "Match: %{customdata[1]}<br>"
                     "Time: %{customdata[3]}<extra></extra>"
                 ),
-                showlegend=True,
+                showlegend=False,
             )
         )
 
-    fig.update_layout(
-        title=dict(
-            text=f"{title_text} — {map_id}",
-            font=dict(color="#38BDF8", size=15),
-            x=0.01,
-            y=0.98,
-        )
-    )
     return fig

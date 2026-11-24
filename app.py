@@ -1,7 +1,7 @@
 """
 LILA BLACK — Player Journey Visualization Tool
-Professional Level Design Telemetry Suite.
-Fully responsive across Mobile, Tablet, and Desktop with zero emoji clutter.
+All controls & functions in the left sidebar.
+Main screen displays only the Map Title, Playback Timeline, and the Minimap Canvas.
 """
 
 import streamlit as st
@@ -25,7 +25,7 @@ from src.map_renderer import (
     EVENT_STYLES,
 )
 
-# Responsive Page configuration
+# Responsive Page Configuration
 st.set_page_config(
     page_title="LILA BLACK — Level Design Telemetry",
     page_icon=None,
@@ -33,100 +33,94 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# Robust, Responsive Styling for Mobile, Tablet & PC
+# Custom Styling: Prevents any title cutoff and keeps main screen focused on map
 st.markdown(
     """
     <style>
-        /* Responsive container spacing */
+        /* Main page layout */
         .block-container {
-            padding-top: 1rem;
-            padding-bottom: 2rem;
-            padding-left: 1rem;
-            padding-right: 1rem;
-            max-width: 1400px;
+            padding-top: 1.5rem !important;
+            padding-bottom: 1.5rem !important;
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+            max-width: 100% !important;
         }
         @media (min-width: 768px) {
             .block-container {
-                padding-left: 2rem;
-                padding-right: 2rem;
+                padding-left: 1.8rem !important;
+                padding-right: 1.8rem !important;
             }
         }
 
-        /* Typography */
-        .app-title {
-            font-size: 1.6rem;
-            font-weight: 700;
-            color: #38BDF8;
-            margin-bottom: 0.25rem;
-            line-height: 1.2;
+        /* Prominent Map Title (Never cut off) */
+        .map-header-box {
+            padding-top: 0.5rem;
+            padding-bottom: 0.6rem;
+            margin-bottom: 0.5rem;
+            border-bottom: 1px solid #1E293B;
         }
-        .app-subtitle {
-            font-size: 0.9rem;
-            color: #94A3B8;
-            margin-bottom: 1.2rem;
-            line-height: 1.4;
+        .map-title {
+            font-size: 1.85rem !important;
+            font-weight: 700 !important;
+            color: #38BDF8 !important;
+            margin: 0 0 4px 0 !important;
+            line-height: 1.25 !important;
+        }
+        .map-subtitle {
+            font-size: 0.92rem !important;
+            color: #94A3B8 !important;
+            margin: 0 !important;
+            line-height: 1.4 !important;
         }
 
-        /* Responsive Legend Box */
-        .legend-container {
-            background-color: #11141A;
+        /* Timeline badge */
+        .timeline-badge {
+            display: inline-block;
+            background-color: #0F172A;
             border: 1px solid #334155;
-            border-radius: 8px;
-            padding: 12px 16px;
-            margin-bottom: 16px;
+            border-radius: 6px;
+            padding: 4px 12px;
+            font-size: 0.88rem;
+            color: #E2E8F0;
+            margin-bottom: 6px;
         }
-        .legend-header {
+        .timeline-badge b {
+            color: #38BDF8;
+        }
+
+        /* Sidebar Legend Container */
+        .sidebar-legend {
+            background-color: #0F172A;
+            border: 1px solid #1E293B;
+            border-radius: 8px;
+            padding: 10px 12px;
+            margin-top: 14px;
             font-size: 0.8rem;
+            color: #CBD5E1;
+            line-height: 1.6;
+        }
+        .sidebar-legend-title {
             font-weight: 700;
             color: #F8FAFC;
+            font-size: 0.78rem;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
-        .legend-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 10px;
+
+        /* Sidebar Insights Box */
+        .sidebar-insight {
+            background-color: #0F172A;
+            border-left: 3px solid #38BDF8;
+            border-radius: 0 6px 6px 0;
+            padding: 10px 12px;
+            margin-top: 12px;
             font-size: 0.82rem;
             color: #E2E8F0;
+            line-height: 1.45;
         }
-        .legend-badge {
-            display: inline-block;
-            font-weight: 600;
-            margin-right: 4px;
-        }
-
-        /* Actionable Insights Callout */
-        .insight-box {
-            background-color: #0F172A;
-            border-left: 4px solid #38BDF8;
-            border-radius: 0 8px 8px 0;
-            padding: 14px 16px;
-            margin-top: 16px;
-            color: #F1F5F9;
-            font-size: 0.88rem;
-            line-height: 1.5;
-        }
-        .insight-box b {
+        .sidebar-insight b {
             color: #38BDF8;
-        }
-
-        /* Streamlit Tabs Polish */
-        .stTabs [data-baseweb="tab-list"] {
-            gap: 8px;
-            border-bottom: 1px solid #334155;
-            margin-bottom: 1rem;
-        }
-        .stTabs [data-baseweb="tab"] {
-            padding: 8px 16px;
-            font-size: 0.95rem;
-            font-weight: 600;
-        }
-
-        /* Slider touch targets for mobile/tablet */
-        .stSlider {
-            padding-top: 0.5rem;
-            padding-bottom: 0.5rem;
         }
     </style>
     """,
@@ -143,16 +137,16 @@ def main():
     try:
         df = get_cached_dataset()
     except Exception as e:
-        st.error(f"Could not load data: {e}")
-        st.info("Run 'python scripts/preprocess.py' to prepare the dataset.")
+        st.error(f"Could not load telemetry data: {e}")
+        st.info("Run 'python scripts/preprocess.py' to generate the dataset.")
         return
 
-    # ---------------------------------------------------------
-    # SIDEBAR: Clean Controls (Zero Emojis)
-    # ---------------------------------------------------------
-    st.sidebar.markdown("### LILA BLACK")
+    # =========================================================================
+    # LEFT SIDEBAR: ALL CONTROLS, FILTERS, METRICS & SETTINGS
+    # =========================================================================
+    st.sidebar.markdown("## LILA BLACK")
     st.sidebar.markdown(
-        "<div style='margin-top: -8px; margin-bottom: 14px; color: #94A3B8; font-size: 0.82rem;'>"
+        "<div style='margin-top: -8px; margin-bottom: 12px; color: #94A3B8; font-size: 0.82rem;'>"
         "Level Design Telemetry Suite</div>",
         unsafe_allow_html=True,
     )
@@ -170,84 +164,63 @@ def main():
         format_func=lambda m: map_labels.get(m, m),
         index=0,
     )
+    map_meta = MAP_CONFIGS.get(selected_map, {})
 
-    # 2. Date Filter
+    # 2. Date Selection
     dates = ["All 5 Days (Feb 10 - Feb 14)"] + get_available_dates(df, selected_map)
-    selected_date_label = st.sidebar.selectbox("Filter by Date", options=dates, index=0)
+    selected_date_label = st.sidebar.selectbox("Filter Date", options=dates, index=0)
     selected_date = None if "All" in selected_date_label else selected_date_label
 
     if selected_date == "2026-02-14":
-        st.sidebar.caption("Notice: Feb 14 is a partial telemetry collection day.")
+        st.sidebar.caption("Notice: Feb 14 is a partial collection day.")
 
     st.sidebar.markdown("---")
 
-    # 3. Entity Visibility Toggles
-    st.sidebar.markdown("### Entity Visibility")
-    show_humans = st.sidebar.checkbox("Human Players", value=True)
-    show_bots = st.sidebar.checkbox("AI Bots", value=True)
+    # 3. View Mode Selection
+    view_mode = st.sidebar.radio(
+        "Explorer Mode",
+        options=["Match Replay", "Map Heatmaps", "Level Design Insights"],
+        index=0,
+    )
+
+    st.sidebar.markdown("---")
+
+    # State variables initialized for main screen rendering
+    current_time_sec = 0.0
+    max_duration_sec = 1.0
+    show_paths = True
+    show_events = True
+    show_humans = True
+    show_bots = True
+    heatmap_choice = "movement"
+    opacity = 0.65
+    color_choice = "Inferno"
+    selected_match_id = None
+    match_df = None
+    match_info = {}
 
     # ---------------------------------------------------------
-    # MAIN AREA: Header
+    # SIDEBAR CONTROLS: MATCH REPLAY MODE
     # ---------------------------------------------------------
-    map_meta = MAP_CONFIGS.get(selected_map, {})
-    st.markdown(
-        f"<div class='app-title'>{map_meta.get('display_name', selected_map)} — Level Design Explorer</div>",
-        unsafe_allow_html=True,
-    )
-    st.markdown(
-        f"<div class='app-subtitle'>{map_meta.get('tagline', '')} | {map_meta.get('description', '')}</div>",
-        unsafe_allow_html=True,
-    )
-
-    # Clean Visual Legend Box (Responsive CSS Grid)
-    st.markdown(
-        """
-        <div class='legend-container'>
-            <div class='legend-header'>Map Legend and Event Symbols</div>
-            <div class='legend-grid'>
-                <div><span class='legend-badge' style='color: #38BDF8;'>―</span> Solid Line: Human Player Trail</div>
-                <div><span class='legend-badge' style='color: #94A3B8;'>┄</span> Dotted Line: AI Bot Trail</div>
-                <div><span class='legend-badge' style='color: #E63946;'>+</span> Red Cross: Player vs Player Kill</div>
-                <div><span class='legend-badge' style='color: #8B0000;'>x</span> Dark X: Player vs Player Death</div>
-                <div><span class='legend-badge' style='color: #F77F00;'>▲</span> Orange Triangle: Player Killed an AI Bot</div>
-                <div><span class='legend-badge' style='color: #9D4EDD;'>▼</span> Purple Triangle: Player Died to an AI Bot</div>
-                <div><span class='legend-badge' style='color: #00F0FF;'>⬢</span> Cyan Hexagon: Eliminated by Storm Zone</div>
-                <div><span class='legend-badge' style='color: #FFD166;'>◆</span> Gold Diamond: Loot Pickup</div>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    # Native Streamlit Tabs (100% Mobile, Tablet & PC friendly)
-    tab_replay, tab_heatmaps, tab_insights = st.tabs([
-        "Match Replay",
-        "Map Heatmaps",
-        "Level Design Insights",
-    ])
-
-    # =========================================================
-    # TAB 1: MATCH REPLAY
-    # =========================================================
-    with tab_replay:
+    if view_mode == "Match Replay":
+        st.sidebar.markdown("### Match Controls")
         matches = get_match_catalogue(df, selected_map, selected_date)
+
         if not matches:
-            st.warning("No matches found for the selected date criteria.")
+            st.sidebar.warning("No matches found for selected date.")
         else:
-            # Responsive Match Selector Row
-            col_filter, col_select = st.columns([1, 2])
-            with col_filter:
-                match_filter = st.selectbox(
-                    "Filter matches:",
-                    options=[
-                        "All Matches",
-                        "Matches with Storm Deaths",
-                        "Matches with PvP Kills",
-                        "High Action (Most Kills)",
-                        "Longest Matches (> 10 mins)",
-                    ],
-                    index=0,
-                )
+            # Match Filter Preset
+            match_filter = st.sidebar.selectbox(
+                "Filter Match Type",
+                options=[
+                    "All Matches",
+                    "Matches with Storm Deaths",
+                    "Matches with PvP Kills",
+                    "High Action (Most Kills)",
+                    "Longest Matches (> 10 mins)",
+                ],
+                index=0,
+            )
 
             filtered_matches = matches
             if "Storm Deaths" in match_filter:
@@ -260,59 +233,172 @@ def main():
                 filtered_matches = [m for m in matches if m["duration_sec"] >= 600]
 
             if not filtered_matches:
-                st.info("No matches matched this filter. Showing all available matches.")
+                st.sidebar.info("No matches matched this filter. Showing all matches.")
                 filtered_matches = matches
 
             match_options = {m["match_id"]: m["label"] for m in filtered_matches}
-            with col_select:
-                selected_match_id = st.selectbox(
-                    f"Choose Match ({len(filtered_matches)} matches):",
-                    options=list(match_options.keys()),
-                    format_func=lambda mid: match_options[mid],
-                    index=0,
-                )
+            selected_match_id = st.sidebar.selectbox(
+                f"Select Match ({len(filtered_matches)} matches)",
+                options=list(match_options.keys()),
+                format_func=lambda mid: match_options[mid],
+                index=0,
+            )
 
             match_df = df[df["clean_match_id"] == selected_match_id]
-            info = get_match_info(df, selected_match_id)
+            match_info = get_match_info(df, selected_match_id)
+            max_duration_sec = float(match_info.get("duration_sec", 10.0))
+            if max_duration_sec <= 0:
+                max_duration_sec = 1.0
 
-            # Responsive Native Metrics Strip (wraps automatically on mobile)
-            m_col1, m_col2, m_col3, m_col4, m_col5 = st.columns(5)
-            m_col1.metric("Match Duration", info.get("duration_str", "00:00"))
-            m_col2.metric("Humans / Bots", f"{info.get('human_count', 0)} / {info.get('bot_count', 0)}")
-            m_col3.metric("Total Kills", info.get("player_kills", 0) + info.get("bot_kills", 0))
-            m_col4.metric("Storm Deaths", info.get("storm_deaths", 0))
-            m_col5.metric("Loot Pickups", info.get("loot_events", 0))
+            # Match Entity Toggles
+            st.sidebar.markdown("### Display Options")
+            show_humans = st.sidebar.checkbox("Human Players", value=True)
+            show_bots = st.sidebar.checkbox("AI Bots", value=True)
+            show_paths = st.sidebar.checkbox("Show Movement Trails", value=True)
+            show_events = st.sidebar.checkbox("Show Combat & Loot Icons", value=True)
 
-            st.write("")
+            # Match Summary Metrics inside sidebar
+            st.sidebar.markdown("### Match Summary")
+            sm1, sm2 = st.sidebar.columns(2)
+            sm1.metric("Duration", match_info.get("duration_str", "00:00"))
+            sm2.metric("Total Kills", match_info.get("player_kills", 0) + match_info.get("bot_kills", 0))
 
-            # Timeline Scrubber
-            max_duration = float(info.get("duration_sec", 10.0))
-            if max_duration <= 0.0:
-                max_duration = 1.0
+            sm3, sm4 = st.sidebar.columns(2)
+            sm3.metric("Humans / Bots", f"{match_info.get('human_count', 0)} / {match_info.get('bot_count', 0)}")
+            sm4.metric("Storm Deaths", match_info.get("storm_deaths", 0))
 
-            time_col, toggle_col = st.columns([3, 1])
-            with time_col:
-                current_time = st.slider(
-                    "Match Timeline Playback (Seconds from start):",
-                    min_value=0.0,
-                    max_value=max_duration,
-                    value=max_duration,
-                    step=1.0 if max_duration > 15 else 0.5,
-                    help="Slide to watch player movements and events unfold chronologically.",
-                )
-                st.caption(
-                    f"Viewing time: **{format_seconds_to_mmss(current_time)} / {format_seconds_to_mmss(max_duration)}** "
-                    f"({int((current_time / max_duration) * 100)}% of match elapsed)"
-                )
-            with toggle_col:
-                show_paths = st.checkbox("Show Movement Trails", value=True)
-                show_events = st.checkbox("Show Combat & Loot Markers", value=True)
+            # Chronological Combat Feed expander inside sidebar
+            with st.sidebar.expander("Chronological Combat Feed", expanded=False):
+                combat_df = match_df[
+                    match_df["event"].isin(
+                        ["Kill", "Killed", "BotKill", "BotKilled", "KilledByStorm", "Loot"]
+                    )
+                ].copy()
+                if not combat_df.empty:
+                    combat_df["Time"] = combat_df["match_time_sec"].apply(format_seconds_to_mmss)
+                    combat_df["Event"] = combat_df["event"].apply(
+                        lambda e: EVENT_STYLES.get(e, {}).get("name", e)
+                    )
+                    combat_df["Actor"] = combat_df["user_id"].apply(
+                        lambda u: f"Bot #{u}" if str(u).isdigit() else f"Player {str(u)[:6]}"
+                    )
+                    st.dataframe(
+                        combat_df[["Time", "Event", "Actor"]].sort_values(by="Time"),
+                        hide_index=True,
+                        use_container_width=True,
+                    )
+                else:
+                    st.caption("No combat events recorded in this match.")
 
-            # Responsive Map Render
+    # ---------------------------------------------------------
+    # SIDEBAR CONTROLS: MAP HEATMAPS MODE
+    # ---------------------------------------------------------
+    elif view_mode == "Map Heatmaps":
+        st.sidebar.markdown("### Heatmap Perspective")
+        heatmap_choice = st.sidebar.radio(
+            "Select Heatmap View:",
+            options=[
+                ("movement", "High-Traffic Movement Paths"),
+                ("combat", "Firefights & Kill Hotspots (Choke Points)"),
+                ("deaths", "Player Elimination Hotspots"),
+                ("storm", "Storm Ring Eliminations (Zone Traps)"),
+                ("loot", "Loot Pickup Density"),
+            ],
+            format_func=lambda opt: opt[1],
+            index=0,
+        )[0]
+
+        st.sidebar.markdown("### Heatmap Settings")
+        opacity = st.sidebar.slider("Overlay Transparency", 0.2, 1.0, 0.65, 0.05)
+        color_choice = st.sidebar.selectbox("Color Scheme", ["Inferno", "Hot", "Turbo", "Viridis"], index=0)
+
+        show_humans = st.sidebar.checkbox("Human Players", value=True)
+        show_bots = st.sidebar.checkbox("AI Bots", value=True)
+
+        # Aggregate Metrics in sidebar
+        agg_mask = df["map_id"] == selected_map
+        if selected_date:
+            agg_mask = agg_mask & (df["date"] == selected_date)
+        filtered_agg_df = df[agg_mask]
+        stats = get_aggregate_stats(filtered_agg_df)
+
+        st.sidebar.markdown("### Map Telemetry Summary")
+        hm1, hm2 = st.sidebar.columns(2)
+        hm1.metric("Matches", f"{stats['total_matches']:,}")
+        hm2.metric("Total Kills", f"{stats['pvp_kills'] + stats['bot_kills']:,}")
+
+        hm3, hm4 = st.sidebar.columns(2)
+        hm3.metric("Humans / Bots", f"{stats['human_players']:,} / {stats['bot_players']:,}")
+        hm4.metric("Storm Deaths", f"{stats['storm_deaths']:,}")
+
+    # ---------------------------------------------------------
+    # SIDEBAR CONTROLS: LEVEL DESIGN INSIGHTS MODE
+    # ---------------------------------------------------------
+    else:
+        st.sidebar.markdown("### Level Design Notes")
+        st.sidebar.info("Review key spatial observations and balance takeaways for the selected map below.")
+
+    # ---------------------------------------------------------
+    # SIDEBAR MAP LEGEND (Always visible on left side)
+    # ---------------------------------------------------------
+    st.sidebar.markdown(
+        """
+        <div class='sidebar-legend'>
+            <div class='sidebar-legend-title'>Map Legend & Symbols</div>
+            <div><span style='color: #38BDF8;'>―</span> Solid Line: Human Player Trail</div>
+            <div><span style='color: #94A3B8;'>┄</span> Dotted Line: AI Bot Trail</div>
+            <div><span style='color: #E63946;'>+</span> Red Cross: Player vs Player Kill</div>
+            <div><span style='color: #8B0000;'>x</span> Dark X: Player vs Player Death</div>
+            <div><span style='color: #F77F00;'>▲</span> Orange ▲: Player Eliminated a Bot</div>
+            <div><span style='color: #9D4EDD;'>▼</span> Purple ▼: Player Died to a Bot</div>
+            <div><span style='color: #00F0FF;'>⬢</span> Cyan ⬢: Eliminated by Storm Zone</div>
+            <div><span style='color: #FFD166;'>◆</span> Gold ◆: Loot Pickup</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    # =========================================================================
+    # MAIN SCREEN: ONLY MAP TITLE, PLAYBACK TIMELINE & MAP CANVAS
+    # =========================================================================
+
+    # 1. Map Title (Crisp, Never Cut Off)
+    st.markdown(
+        f"""
+        <div class='map-header-box'>
+            <div class='map-title'>{map_meta.get('display_name', selected_map)}</div>
+            <div class='map-subtitle'>{map_meta.get('tagline', '')} | {map_meta.get('description', '')}</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    # 2. Main Screen Content Based on Mode
+    if view_mode == "Match Replay":
+        if match_df is not None and not match_df.empty:
+            # Playback Timeline Slider directly on Main Screen
+            current_time_sec = st.slider(
+                "Match Playback Timeline (Seconds):",
+                min_value=0.0,
+                max_value=max_duration_sec,
+                value=max_duration_sec,
+                step=1.0 if max_duration_sec > 15 else 0.5,
+                help="Slide forward and backward to watch player movement and combat unfold.",
+            )
+
+            time_badge_str = (
+                f"<div class='timeline-badge'>"
+                f"Timeline Playback: <b>{format_seconds_to_mmss(current_time_sec)} / {format_seconds_to_mmss(max_duration_sec)}</b> "
+                f"({int((current_time_sec / max_duration_sec) * 100)}% of match elapsed)"
+                f"</div>"
+            )
+            st.markdown(time_badge_str, unsafe_allow_html=True)
+
+            # Responsive Map Canvas
             replay_fig = render_match_replay(
                 match_df=match_df,
                 map_id=selected_map,
-                current_time_sec=current_time,
+                current_time_sec=current_time_sec,
                 show_humans=show_humans,
                 show_bots=show_bots,
                 show_paths=show_paths,
@@ -325,93 +411,15 @@ def main():
                 use_container_width=True,
                 config={"responsive": True, "scrollZoom": True, "displayModeBar": True},
             )
+        else:
+            st.info("Please select a valid match from the left sidebar to start playback.")
 
-            # Chronological Match Log
-            with st.expander("Chronological Combat and Loot Feed", expanded=False):
-                combat_df = match_df[
-                    match_df["event"].isin(
-                        ["Kill", "Killed", "BotKill", "BotKilled", "KilledByStorm", "Loot"]
-                    )
-                    & (match_df["match_time_sec"] <= current_time)
-                ].copy()
-
-                if not combat_df.empty:
-                    combat_df["Time"] = combat_df["match_time_sec"].apply(format_seconds_to_mmss)
-                    combat_df["Event"] = combat_df["event"].apply(
-                        lambda e: EVENT_STYLES.get(e, {}).get("name", e)
-                    )
-                    combat_df["Player Type"] = combat_df["is_bot"].apply(
-                        lambda b: "AI Bot" if b else "Human"
-                    )
-                    combat_df["Player ID"] = combat_df["user_id"].apply(
-                        lambda u: f"Bot #{u}" if str(u).isdigit() else f"Player {str(u)[:8]}..."
-                    )
-                    combat_df["Elevation"] = combat_df["y"].round(1).astype(str) + "m"
-
-                    display_df = combat_df[
-                        ["Time", "Event", "Player Type", "Player ID", "Elevation"]
-                    ].sort_values(by="Time")
-
-                    st.dataframe(display_df, use_container_width=True, hide_index=True)
-                else:
-                    st.info("No combat or loot events have occurred yet up to this timestamp.")
-
-    # =========================================================
-    # TAB 2: AGGREGATE HEATMAPS
-    # =========================================================
-    with tab_heatmaps:
+    elif view_mode == "Map Heatmaps":
         agg_mask = df["map_id"] == selected_map
         if selected_date:
             agg_mask = agg_mask & (df["date"] == selected_date)
         filtered_agg_df = df[agg_mask]
 
-        stats = get_aggregate_stats(filtered_agg_df)
-
-        # Responsive Aggregate Metrics
-        a_col1, a_col2, a_col3, a_col4, a_col5 = st.columns(5)
-        a_col1.metric("Matches Recorded", f"{stats['total_matches']:,}")
-        a_col2.metric("Humans / Bots", f"{stats['human_players']:,} / {stats['bot_players']:,}")
-        a_col3.metric("Total Kills", f"{stats['pvp_kills'] + stats['bot_kills']:,}")
-        a_col4.metric("Storm Deaths", f"{stats['storm_deaths']:,}")
-        a_col5.metric("Loot Pickups", f"{stats['loot_pickups']:,}")
-
-        st.write("")
-
-        # Level Designer Perspectives
-        st.markdown("#### Select Heatmap Perspective")
-        heatmap_choice = st.radio(
-            "Heatmap View:",
-            options=[
-                ("movement", "High-Traffic Movement Paths and Dead Zones"),
-                ("combat", "Firefights and Combat Hotspots (Choke Points)"),
-                ("deaths", "Player Elimination and Danger Hotspots"),
-                ("storm", "Storm Ring Eliminations (Zone Traps)"),
-                ("loot", "Loot Pickup Density"),
-            ],
-            format_func=lambda opt: opt[1],
-            index=0,
-            horizontal=False,
-        )[0]
-
-        # Heatmap Controls
-        ctl_col1, ctl_col2 = st.columns([2, 1])
-        with ctl_col1:
-            opacity = st.slider(
-                "Heatmap Transparency:",
-                min_value=0.2,
-                max_value=1.0,
-                value=0.65,
-                step=0.05,
-                help="Adjust transparency to clearly view roads and structures under the heatmap.",
-            )
-        with ctl_col2:
-            color_choice = st.selectbox(
-                "Color Palette:",
-                options=["Inferno", "Hot", "Turbo", "Viridis"],
-                index=0,
-            )
-
-        # Responsive Heatmap Render
         heat_fig = render_aggregate_heatmap(
             df=filtered_agg_df,
             map_id=selected_map,
@@ -428,16 +436,13 @@ def main():
             config={"responsive": True, "scrollZoom": True, "displayModeBar": True},
         )
 
-    # =========================================================
-    # TAB 3: LEVEL DESIGN INSIGHTS
-    # =========================================================
-    with tab_insights:
-        st.markdown("### Actionable Level Design Observations")
-
+    else:
+        # Level Design Insights Mode on Main Screen
+        st.markdown("### Actionable Level Design Takeaways")
         if selected_map == "AmbroseValley":
             st.markdown(
                 """
-                <div class='insight-box'>
+                <div class='sidebar-insight'>
                     <b>1. Dead Zone in the North-West Quadrant:</b><br>
                     Over <b>78.4%</b> of player traversal is confined to a diagonal Southwest-to-Northeast corridor 
                     connecting the main landing zones to the primary central extraction point. 
@@ -445,7 +450,7 @@ def main():
                     <i>Recommendation:</i> Introduce high-value extraction beacons or dedicated infiltration spawns 
                     in the Northwest corner to incentivize peripheral exploration before late-game ring collapse.
                 </div>
-                <div class='insight-box'>
+                <div class='sidebar-insight' style='margin-top: 14px;'>
                     <b>2. Elevation Combat Disparity:</b><br>
                     Ambrose Valley elevation ranges from 68m (river valley) to 163m (hilltop fortresses). 
                     Players engaging AI bots from high ground (elevation &gt; 130m) have a <b>4.8 : 1</b> kill-to-death ratio. 
@@ -459,14 +464,14 @@ def main():
         elif selected_map == "Lockdown":
             st.markdown(
                 """
-                <div class='insight-box'>
+                <div class='sidebar-insight'>
                     <b>1. High Storm Ring Mortality (9.94% of matches):</b><br>
                     Lockdown has the highest storm fatality rate of any map in LILA BLACK. 
                     Storm casualties tightly cluster around interior choke points in the southern industrial wing.<br>
                     <i>Recommendation:</i> Add secondary egress vents or vertical drop chutes in the southern wing 
                     to prevent players getting cornered by the closing storm wall between 11:00 and 14:00.
                 </div>
-                <div class='insight-box'>
+                <div class='sidebar-insight' style='margin-top: 14px;'>
                     <b>2. Close-Quarters AI Lethality:</b><br>
                     Due to tight indoor rooms and doorway bottlenecks, AI bots achieve their highest lethality on Lockdown 
                     (player-to-bot K/D drops to 2.54 : 1, compared to &gt; 4.1 : 1 on open maps).
@@ -477,13 +482,13 @@ def main():
         else:
             st.markdown(
                 """
-                <div class='insight-box'>
+                <div class='sidebar-insight'>
                     <b>1. Central Gorge Bridge Choke Points:</b><br>
                     Player traversal and combat on Grand Rift are heavily funneled through the two bridges spanning the central chasm.<br>
                     <i>Recommendation:</i> Add lower catwalks or zip-line crossing points across the gorge to give players 
                     viable flanking alternatives when bridges are camped by snipers.
                 </div>
-                <div class='insight-box'>
+                <div class='sidebar-insight' style='margin-top: 14px;'>
                     <b>2. Fast Lane Rotations:</b><br>
                     Grand Rift has the shortest average match duration of all 3 maps (mean duration 6.2 minutes), 
                     suggesting players encounter one another much faster due to the linear two-lane map layout.
